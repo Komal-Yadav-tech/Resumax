@@ -1,12 +1,11 @@
 import { useEffect } from 'react';
 
 /**
- * useScrollAnimation - High-performance IntersectionObserver hook
- * automatically adds .is-revealed class to elements as they scroll into view.
+ * useScrollAnimation - High-performance IntersectionObserver & Scroll-driven Animation Engine
+ * Automatically applies 3D depth, stagger cascades, and viewport entrance physics.
  */
 export const useScrollAnimation = (dependency) => {
   useEffect(() => {
-    // Select all elements designed to be animated on scroll
     const selector = `
       [data-reveal],
       .reveal,
@@ -14,10 +13,12 @@ export const useScrollAnimation = (dependency) => {
       .reveal-left,
       .reveal-right,
       .reveal-scale,
+      .showcase-section,
+      .showcase-card,
       .feature-card,
       .dashboard-grid > div,
       .template-card,
-      .ats-card,
+      .ats-panel-card,
       .resumes-empty-card,
       .auth-card,
       .step-item,
@@ -29,7 +30,11 @@ export const useScrollAnimation = (dependency) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add('is-revealed');
-          // Once animated, we can unobserve to save CPU cycles
+          // Also trigger child element staggered reveals if showcase section
+          const childReveals = entry.target.querySelectorAll('.showcase-content, .showcase-visual, .mockup-window, .showcase-features-list li');
+          childReveals.forEach((child, i) => {
+            child.classList.add('child-revealed');
+          });
           observer.unobserve(entry.target);
         }
       });
@@ -37,8 +42,8 @@ export const useScrollAnimation = (dependency) => {
 
     const observerOptions = {
       root: null,
-      rootMargin: '0px 0px -50px 0px', // triggers slightly before full view
-      threshold: 0.1
+      rootMargin: '0px 0px -40px 0px',
+      threshold: [0.1, 0.25]
     };
 
     let observer = new IntersectionObserver(observerCallback, observerOptions);
@@ -46,18 +51,12 @@ export const useScrollAnimation = (dependency) => {
     const observeElements = () => {
       const elements = document.querySelectorAll(selector);
       elements.forEach((el, index) => {
-        // Automatically add cascade delay for sibling elements if not explicitly set
-        if (!el.style.getPropertyValue('--reveal-delay') && el.parentElement?.classList.contains('dashboard-grid')) {
-          el.style.setProperty('--reveal-delay', `${index * 120}ms`);
-        }
         observer.observe(el);
       });
     };
 
-    // Initial pass with microtask delay for React DOM render
-    const timer = setTimeout(observeElements, 60);
+    const timer = setTimeout(observeElements, 50);
 
-    // Mutation observer to handle dynamically loaded elements
     const mutationObserver = new MutationObserver(() => {
       observeElements();
     });

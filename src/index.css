@@ -7894,38 +7894,49 @@ input:checked + .slider:before {
    Scroll-Based Animations & Interactive Elements
    ========================================================================== */
 
-/* Top Scroll Progress Bar */
+/* ==========================================================================
+   Advanced 3D Scroll-Based Animations & Interactive Elements
+   ========================================================================== */
+
+/* Top Scroll Progress Bar with Rainbow Laser Glow */
 .scroll-progress-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 3px;
-  background: transparent;
+  height: 3.5px;
+  background: rgba(0, 0, 0, 0.05);
   z-index: 99999;
   pointer-events: none;
 }
 
 .scroll-progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, var(--accent) 0%, #8b5cf6 50%, #ec4899 100%);
-  box-shadow: 0 0 10px rgba(37, 99, 235, 0.6), 0 0 4px rgba(139, 92, 246, 0.8);
-  transition: width 0.1s ease-out;
-  border-radius: 0 2px 2px 0;
+  background: linear-gradient(90deg, #2563EB 0%, #7C3AED 45%, #EC4899 80%, #F59E0B 100%);
+  background-size: 200% 100%;
+  animation: shimmerProgress 3s linear infinite;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.8), 0 0 20px rgba(124, 58, 237, 0.6);
+  transition: width 0.08s ease-out;
+  border-radius: 0 4px 4px 0;
+}
+
+@keyframes shimmerProgress {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }
 
 /* Floating Scroll to Top Button */
 .scroll-to-top-btn {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  width: 44px;
-  height: 44px;
+  bottom: 2.25rem;
+  right: 2.25rem;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: var(--bg-card);
   color: var(--accent);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-lg), 0 0 15px var(--accent-glow);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 0 20px var(--accent-glow);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -7933,10 +7944,10 @@ input:checked + .slider:before {
   z-index: 999;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(16px) scale(0.85);
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  transform: translateY(20px) scale(0.8);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .scroll-to-top-btn.is-visible {
@@ -7949,15 +7960,184 @@ input:checked + .slider:before {
   background: var(--accent);
   color: #ffffff;
   border-color: var(--accent);
-  transform: translateY(-4px) scale(1.08);
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+  transform: translateY(-5px) scale(1.1);
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.45);
 }
 
 .scroll-to-top-btn:active {
   transform: translateY(-1px) scale(0.96);
 }
 
-/* Base Scroll Reveal Classes */
+/* ==========================================================================
+   Showcase Cards 3D Perspective Entrance
+   ========================================================================== */
+
+.showcase-section,
+.showcase-card,
+.welcome-banner,
+.resumes-bottom-section,
+.ats-panel-card,
+.auth-card,
+.admin-stat-card {
+  perspective: 1200px;
+  will-change: opacity, transform, filter;
+}
+
+.showcase-card,
+.welcome-banner,
+.resumes-bottom-section {
+  opacity: 0;
+  transform: perspective(1200px) rotateX(4.5deg) translateY(45px) scale(0.96);
+  filter: blur(4px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s ease,
+              border-color 0.4s ease;
+}
+
+.showcase-card.is-revealed,
+.welcome-banner.is-revealed,
+.resumes-bottom-section.is-revealed {
+  opacity: 1 !important;
+  transform: perspective(1200px) rotateX(0deg) translateY(0) scale(1) !important;
+  filter: blur(0px) !important;
+}
+
+/* Child Cascading Staggers inside Showcase Card */
+.showcase-card .showcase-tag {
+  opacity: 0;
+  transform: scale(0.85) translateY(10px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s,
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+}
+
+.showcase-card.is-revealed .showcase-tag {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.showcase-card .showcase-content h2 {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.18s,
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.18s;
+}
+
+.showcase-card.is-revealed .showcase-content h2 {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.showcase-card .showcase-desc {
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.26s,
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.26s;
+}
+
+.showcase-card.is-revealed .showcase-desc {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.showcase-card .showcase-features-list li {
+  opacity: 0;
+  transform: translateX(-15px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.showcase-card.is-revealed .showcase-features-list li:nth-child(1) {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.34s;
+}
+
+.showcase-card.is-revealed .showcase-features-list li:nth-child(2) {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.42s;
+}
+
+.showcase-card.is-revealed .showcase-features-list li:nth-child(3) {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.5s;
+}
+
+.showcase-card .showcase-actions {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.55s,
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.55s;
+}
+
+.showcase-card.is-revealed .showcase-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Visual Mockup Entrance */
+.showcase-card .showcase-visual {
+  opacity: 0;
+  transform: scale(0.92) translateY(24px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.25s,
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.25s;
+}
+
+.showcase-card.is-revealed .showcase-visual {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Specific Mockup Inner Animations */
+.showcase-card.is-revealed .score-circle-badge {
+  animation: scoreBadgePop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
+}
+
+@keyframes scoreBadgePop {
+  0% {
+    transform: scale(0.4) rotate(-15deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.showcase-card.is-revealed .diff-item.ai {
+  animation: aiHighlightGlow 2.5s ease-in-out infinite 0.6s;
+}
+
+@keyframes aiHighlightGlow {
+  0%, 100% {
+    border-color: var(--border);
+    box-shadow: none;
+  }
+  50% {
+    border-color: var(--accent);
+    box-shadow: 0 0 16px rgba(37, 99, 235, 0.2);
+  }
+}
+
+.showcase-card.is-revealed .mockup-chat-msg.bot {
+  animation: chatMsgSlide 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+}
+
+@keyframes chatMsgSlide {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* General Reveal Classes */
 .reveal,
 .reveal-up,
 [data-reveal],
@@ -7971,46 +8151,39 @@ input:checked + .slider:before {
 .admin-stat-card,
 .section-header {
   opacity: 0;
-  transform: translateY(26px);
+  transform: translateY(30px);
+  filter: blur(3px);
   transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.75s cubic-bezier(0.16, 1, 0.3, 1);
   transition-delay: var(--reveal-delay, 0ms);
-  will-change: opacity, transform;
+  will-change: opacity, transform, filter;
 }
 
 .reveal-left {
   opacity: 0;
-  transform: translateX(-32px);
+  transform: translateX(-36px);
+  filter: blur(3px);
   transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.75s cubic-bezier(0.16, 1, 0.3, 1);
   transition-delay: var(--reveal-delay, 0ms);
-  will-change: opacity, transform;
 }
 
 .reveal-right {
   opacity: 0;
-  transform: translateX(32px);
+  transform: translateX(36px);
+  filter: blur(3px);
   transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.75s cubic-bezier(0.16, 1, 0.3, 1);
   transition-delay: var(--reveal-delay, 0ms);
-  will-change: opacity, transform;
 }
 
-.reveal-scale {
-  opacity: 0;
-  transform: scale(0.92);
-  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
-  transition-delay: var(--reveal-delay, 0ms);
-  will-change: opacity, transform;
-}
-
-/* When revealed by IntersectionObserver */
 .reveal.is-revealed,
 .reveal-up.is-revealed,
 .reveal-left.is-revealed,
 .reveal-right.is-revealed,
-.reveal-scale.is-revealed,
 [data-reveal].is-revealed,
 .feature-card.is-revealed,
 .dashboard-grid > div.is-revealed,
@@ -8023,54 +8196,51 @@ input:checked + .slider:before {
 .section-header.is-revealed {
   opacity: 1 !important;
   transform: translate(0, 0) scale(1) !important;
+  filter: blur(0px) !important;
 }
 
-/* Stagger animation timing for child elements */
-.stagger-1 { --reveal-delay: 60ms; }
-.stagger-2 { --reveal-delay: 140ms; }
-.stagger-3 { --reveal-delay: 220ms; }
-.stagger-4 { --reveal-delay: 300ms; }
-.stagger-5 { --reveal-delay: 380ms; }
+/* Stagger utility classes */
+.stagger-1 { --reveal-delay: 80ms; }
+.stagger-2 { --reveal-delay: 160ms; }
+.stagger-3 { --reveal-delay: 240ms; }
+.stagger-4 { --reveal-delay: 320ms; }
+.stagger-5 { --reveal-delay: 400ms; }
 
-/* Subtle floating micro-animation for key elements */
-@keyframes floatGentle {
+/* Micro-float animation for visual elements */
+@keyframes floatSubtle {
   0%, 100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
   }
 }
 
-.floating-subtle {
-  animation: floatGentle 4s ease-in-out infinite;
+.mockup-window {
+  animation: floatSubtle 6s ease-in-out infinite;
 }
 
 /* Reduced Motion Accessibility */
 @media (prefers-reduced-motion: reduce) {
+  .showcase-card,
+  .welcome-banner,
+  .resumes-bottom-section,
   .reveal,
   .reveal-up,
   .reveal-left,
   .reveal-right,
-  .reveal-scale,
   [data-reveal],
-  .feature-card,
-  .dashboard-grid > div,
-  .template-card,
-  .ats-card,
-  .resumes-empty-card,
-  .auth-card,
-  .step-item,
-  .admin-stat-card,
-  .section-header {
+  .mockup-window,
+  .score-circle-badge,
+  .diff-item.ai,
+  .mockup-chat-msg.bot {
     opacity: 1 !important;
     transform: none !important;
+    filter: none !important;
     transition: none !important;
+    animation: none !important;
   }
   .scroll-to-top-btn {
     transition: none !important;
-  }
-  .floating-subtle {
-    animation: none !important;
   }
 }
