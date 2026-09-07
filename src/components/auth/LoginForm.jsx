@@ -69,39 +69,6 @@ export const LoginForm = ({ onNavigate }) => {
           <p>Log in to access your resumes and ATS insights</p>
         </div>
 
-        <div
-          style={{
-            background: 'var(--accent-light)',
-            border: '1px solid var(--accent)',
-            borderRadius: 'var(--radius-md)',
-            padding: '0.75rem 1rem',
-            marginBottom: '1.25rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '0.5rem'
-          }}
-        >
-          <div>
-            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--accent)' }}>
-              Demo Account
-            </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-              demo@resumax.com / Password123!
-            </div>
-          </div>
-          <button
-            type="button"
-            className="btn btn-secondary btn-sm"
-            style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}
-            onClick={() => {
-              setEmail('demo@resumax.com');
-              setPassword('Password123!');
-            }}
-          >
-            Auto-fill
-          </button>
-        </div>
 
         {error && (
           <div className="alert alert-danger" role="alert">
