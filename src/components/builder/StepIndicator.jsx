@@ -11,8 +11,18 @@ export const STEPS = [
 ];
 
 export const StepIndicator = ({ currentStep, onSelectStep }) => {
+  const currentStepObj = STEPS.find((s) => s.id === currentStep) || STEPS[0];
+
   return (
     <div className="step-indicator-container">
+      {/* Mobile Step Status Badge */}
+      <div className="mobile-step-badge-row">
+        <span className="mobile-step-counter">
+          Step {currentStep} of {STEPS.length}
+        </span>
+        <span className="mobile-step-name">{currentStepObj.label}</span>
+      </div>
+
       <div className="step-progress-bar-bg">
         <div
           className="step-progress-bar-fill"
@@ -34,6 +44,7 @@ export const StepIndicator = ({ currentStep, onSelectStep }) => {
               }`}
               onClick={() => onSelectStep && onSelectStep(step.id)}
               title={step.label}
+              aria-label={`Go to step ${step.id}: ${step.label}`}
             >
               <div className="step-circle">
                 {isCompleted ? <Check size={14} strokeWidth={3} /> : step.id}

@@ -14,7 +14,8 @@ const testSuites = [
   { name: 'Phase 4: AI Career Chatbot & Context Injection', file: 'test_chatbot_phase4.js' },
   { name: 'Phase 5: Light / Dark Mode Toggle & Design Tokens', file: 'test_theme_phase5.js' },
   { name: 'Phase 6: Real AI Backend & Gemini API Endpoints', file: 'test_ai_phase6.js' },
-  { name: 'Feature Additions: Multi-Format Export (PDF, DOCX, TXT) & Feedback Popup', file: 'test_export_feedback.js' }
+  { name: 'Feature Additions: Multi-Format Export (PDF, DOCX, TXT) & Feedback Popup', file: 'test_export_feedback.js' },
+  { name: 'Phase 8: Mobile Responsiveness, Admin Panel & Landing Page', file: 'test_responsive_admin_landing.js' }
 ];
 
 let passedCount = 0;

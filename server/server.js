@@ -5,6 +5,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { generateResumeWithAI, analyzeAtsWithAI, chatWithCareerAI } from './geminiService.js';
+import { getAdminStore, saveAdminStore, recordAnalyticsEvent } from './adminService.js';
 
 dotenv.config();
 
@@ -120,6 +121,152 @@ app.get('/api/feedback', (req, res) => {
     reviews: FEEDBACK_STORE
   });
 });
+
+// ============================================================================
+// Admin Panel Endpoints
+// ============================================================================
+
+// Admin Login
+app.post('/api/admin/login', (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const store = getAdminStore();
+
+    if (
+      email &&
+      password &&
+      email.toLowerCase() === store.adminCredentials.email.toLowerCase() &&
+      password === store.adminCredentials.password
+    ) {
+      const adminSession = {
+        uid: 'admin_master_01',
+        email: store.adminCredentials.email,
+        displayName: store.adminCredentials.name,
+        role: 'admin',
+        token: `admin_tok_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`
+      };
+      return res.json({ success: true, user: adminSession });
+    }
+
+    return res.status(401).json({ error: 'Invalid admin email or password.' });
+  } catch (error) {
+    console.error('Admin login error:', error);
+    res.status(500).json({ error: 'Admin login failed.', details: error.message });
+  }
+});
+
+// Admin Dashboard Analytics
+app.get('/api/admin/stats', (req, res) => {
+  try {
+    const store = getAdminStore();
+    const reviews = FEEDBACK_STORE;
+    const avgRating = reviews.length > 0 
+      ? Number((reviews.reduce((acc, r) => acc + (r.rating || 0), 0) / reviews.length).toFixed(1))
+      : 5.0;
+
+    res.json({
+      analytics: store.analytics,
+      feedback: {
+        total: reviews.length,
+        averageRating: avgRating
+      },
+      registeredUsersCount: store.users?.length || store.analytics.totalRegisteredUsers
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve admin stats.', details: error.message });
+  }
+});
+
+// Record analytics events (resume created, exported, user joined)
+app.post('/api/admin/event', (req, res) => {
+  try {
+    const { eventType, details } = req.body;
+    if (!eventType) {
+      return res.status(400).json({ error: 'eventType is required.' });
+    }
+    const updatedAnalytics = recordAnalyticsEvent(eventType, details);
+    res.json({ success: true, analytics: updatedAnalytics });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to record event.', details: error.message });
+  }
+});
+
+// Get Live Website Content
+app.get('/api/admin/content', (req, res) => {
+  try {
+    const store = getAdminStore();
+    res.json(store.content);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve website content.', details: error.message });
+  }
+});
+
+// Update Live Website Content
+app.put('/api/admin/content', (req, res) => {
+  try {
+    const newContent = req.body;
+    if (!newContent) {
+      return res.status(400).json({ error: 'Content payload is required.' });
+    }
+    const store = getAdminStore();
+    store.content = {
+      ...store.content,
+      ...newContent,
+      hero: { ...store.content.hero, ...(newContent.hero || {}) },
+      features: { ...store.content.features, ...(newContent.features || {}) },
+      announcementBanner: { ...store.content.announcementBanner, ...(newContent.announcementBanner || {}) },
+      pricing: { ...store.content.pricing, ...(newContent.pricing || {}) },
+      footer: { ...store.content.footer, ...(newContent.footer || {}) }
+    };
+    saveAdminStore(store);
+    res.json({ success: true, message: 'Content updated successfully.', content: store.content });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update content.', details: error.message });
+  }
+});
+
+// Get Site-wide Theme Settings
+app.get('/api/admin/theme', (req, res) => {
+  try {
+    const store = getAdminStore();
+    res.json(store.theme);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve theme settings.', details: error.message });
+  }
+});
+
+// Update Site-wide Theme Settings
+app.put('/api/admin/theme', (req, res) => {
+  try {
+    const newTheme = req.body;
+    if (!newTheme) {
+      return res.status(400).json({ error: 'Theme payload is required.' });
+    }
+    const store = getAdminStore();
+    store.theme = {
+      ...store.theme,
+      ...newTheme
+    };
+    saveAdminStore(store);
+    res.json({ success: true, message: 'Theme updated successfully.', theme: store.theme });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update theme.', details: error.message });
+  }
+});
+
+// Get User Directory
+app.get('/api/admin/users', (req, res) => {
+  try {
+    const store = getAdminStore();
+    res.json({
+      total: store.users?.length || 0,
+      users: store.users || []
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve users list.', details: error.message });
+  }
+});
+
 
 // Single Page Application (SPA) catch-all handler for client-side routing
 app.use((req, res, next) => {

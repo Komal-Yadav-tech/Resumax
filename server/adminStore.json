@@ -1,0 +1,102 @@
+{
+  "adminCredentials": {
+    "email": "admin@resumax.com",
+    "password": "admin123",
+    "name": "Resumax Administrator",
+    "role": "admin"
+  },
+  "analytics": {
+    "totalResumesCreated": 150,
+    "totalResumesCompleted": 128,
+    "totalRegisteredUsers": 156,
+    "resumesToday": 22,
+    "resumesThisWeek": 75,
+    "resumesThisMonth": 150,
+    "popularTemplates": {
+      "classic": 52,
+      "ats-pro": 49,
+      "modern": 28,
+      "minimal": 15,
+      "other": 6
+    },
+    "lastUpdated": "2026-09-07T18:12:59.855Z"
+  },
+  "content": {
+    "hero": {
+      "welcomeHeading": "Welcome to Resumax",
+      "welcomeTagline": "Build your resume smarter with AI",
+      "badgeText": "Unlimited & 100% Free AI Career Toolkit",
+      "dashboardHeading": "Welcome back",
+      "dashboardSubtext": "Ready to land your dream role? Answer a few guided questions to generate a tailored, ATS-ready resume or evaluate your existing resume with AI scoring."
+    },
+    "features": {
+      "builderTitle": "AI Resume Builder",
+      "builderDesc": "Answer simple step-by-step questions. Our AI drafts impactful bullet points, summary, and formats it automatically.",
+      "atsTitle": "ATS Strength Checker",
+      "atsDesc": "Get a 0–100 score, discover missing job keywords, and receive actionable fixes to beat applicant tracking systems.",
+      "advisorTitle": "AI Career Advisor",
+      "advisorDesc": "Ask tailored questions about career pivots, explaining employment gaps, interview prep, and bullet point polishing."
+    },
+    "announcementBanner": {
+      "enabled": false,
+      "text": "✨ Pro Tip: Over 12 modern and ATS-optimized resume templates now available for free download!",
+      "linkText": "Try Templates",
+      "linkTarget": "templates"
+    },
+    "pricing": {
+      "title": "100% Free Forever",
+      "subtitle": "No paywalls, no hidden watermarks, no credit card required.",
+      "highlightBadge": "Community Edition",
+      "features": [
+        "Unlimited AI Resume Generation",
+        "Multi-Format Exports (PDF, DOCX, TXT)",
+        "12 ATS-Compliant Layouts",
+        "24/7 AI Career Advisor"
+      ]
+    },
+    "footer": {
+      "copyrightText": "© 2026 Resumax. Open & Accessible AI Career Tools for Everyone.",
+      "companyTagline": "Empowering job seekers worldwide with intelligent career automation."
+    }
+  },
+  "theme": {
+    "defaultMode": "light",
+    "preset": "ocean",
+    "accentColor": "#0891B2",
+    "radius": "10px"
+  },
+  "users": [
+    {
+      "uid": "user_admin_01",
+      "email": "admin@resumax.com",
+      "displayName": "System Administrator",
+      "role": "admin",
+      "resumesCount": 12,
+      "createdAt": "2026-01-15T08:30:00.000Z"
+    },
+    {
+      "uid": "user_demo_default",
+      "email": "demo@resumax.com",
+      "displayName": "Alex Morgan",
+      "role": "user",
+      "resumesCount": 3,
+      "createdAt": "2026-02-01T10:15:00.000Z"
+    },
+    {
+      "uid": "user_sarah_99",
+      "email": "sarah.connor@example.com",
+      "displayName": "Sarah Connor",
+      "role": "user",
+      "resumesCount": 5,
+      "createdAt": "2026-02-14T14:20:00.000Z"
+    },
+    {
+      "uid": "user_marcus_dev",
+      "email": "marcus.vance@example.com",
+      "displayName": "Marcus Vance",
+      "role": "user",
+      "resumesCount": 2,
+      "createdAt": "2026-03-01T11:45:00.000Z"
+    }
+  ]
+}

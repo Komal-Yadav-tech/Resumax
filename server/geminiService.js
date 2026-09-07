@@ -214,12 +214,48 @@ Evaluate and return in strict JSON format:
     missingKeywords = COMMON_KEYWORDS.filter((kw) => !fullResumeText.includes(kw.toLowerCase())).slice(0, 5);
   }
 
+  // Dynamic bullet strength & action verb calculation
+  const strongVerbsPattern = /\b(spearheaded|engineered|architected|developed|implemented|orchestrated|optimized|accelerated|transformed|delivered|designed|built|reduced|increased|generated|streamlined|championed|formulated|executed|established|led|mentored|automated|deployed|scaled|integrated|maximized|authored|collaborated)\b/i;
+  const weakVerbsPattern = /\b(responsible for|helped with|assisted with|worked on|participated in|handled|did|was involved in)\b/i;
+
+  let strongBulletCount = 0;
+  let weakBulletCount = 0;
+  allBullets.forEach((bullet) => {
+    if (strongVerbsPattern.test(bullet)) strongBulletCount++;
+    if (weakVerbsPattern.test(bullet)) weakBulletCount++;
+  });
+
+  let actionVerbsScore = 80;
+  if (allBullets.length > 0) {
+    const strongRatio = strongBulletCount / allBullets.length;
+    const weakPenalty = (weakBulletCount / allBullets.length) * 30;
+    actionVerbsScore = Math.min(100, Math.max(20, Math.round((strongRatio * 100) - weakPenalty + 20)));
+  }
+
+  const bulletStrength = actionVerbsScore >= 80 ? 'Strong' : actionVerbsScore >= 60 ? 'Moderate' : 'Needs Improvement';
+
+  const metricPattern = /(\d+[\.,]?\d*[%kMB+]|\$\d+[\.,]?\d*|\b\d+\/\d+\b|\b\d+x\b|\b\d+\s*(users|customers|engineers|developers|members|people|clients|teams|ms|seconds|minutes|hours|days|weeks|months|years)|\b\d{1,}\b)/i;
+  let metricBulletsCount = 0;
+  allBullets.forEach((bullet) => {
+    if (metricPattern.test(bullet)) metricBulletsCount++;
+  });
+
+  let quantifiableMetricsScore = 75;
+  if (allBullets.length > 0) {
+    const metricRatio = metricBulletsCount / allBullets.length;
+    if (metricRatio >= 0.5) {
+      quantifiableMetricsScore = Math.min(100, Math.round(75 + ((metricRatio - 0.5) * 50)));
+    } else {
+      quantifiableMetricsScore = Math.max(20, Math.round(metricRatio * 150));
+    }
+  }
+
   return {
     matchedKeywords,
     missingKeywords,
-    bulletStrength: 'Strong',
-    actionVerbsScore: 90,
-    quantifiableMetricsScore: 85,
+    bulletStrength,
+    actionVerbsScore,
+    quantifiableMetricsScore,
     keywordMatchScore
   };
 };
@@ -263,7 +299,38 @@ Provide a direct, empowering, and highly actionable response formatted cleanly w
 
   // Fallback intelligent coaching logic
   const query = (message || '').toLowerCase();
-  if (query.includes('bullet') || query.includes('improve') || query.includes('rewrite')) {
+
+  if (query.includes('interview') || query.includes('question') || query.includes('practice') || query.includes('behavioral') || query.includes('technical')) {
+    return `Based on your resume for **${targetRole}** with core skills in **${skills}**, here are the top 4 interview questions you should prepare for:
+
+1. **Technical Architecture:** *"How do you design scalable applications with ${skills.split(',')[0] || 'your core stack'} while balancing performance and maintainability?"*
+2. **Leadership & Collaboration (STAR Method):** *"Tell me about a time at ${latestExp.company || 'your previous company'} when you faced a difficult technical disagreement. How did you align the team and deliver?"*
+3. **Problem Solving & Debugging:** *"Describe the most complex production bottleneck or bug you diagnosed. What metrics did you use to measure success?"*
+4. **Impact & Metrics:** *"Walk me through a project where you drove measurable business outcomes (speed, revenue, user retention)."*
+
+💡 **Strategy:** Structure your answers using the **STAR method** (Situation, Task, Action, Result) with specific percentages and outcomes!`;
+  }
+
+  if (query.includes('gap') || query.includes('break') || query.includes('transition') || query.includes('pivot') || query.includes('unemployed') || query.includes('layoff')) {
+    return `Explaining a career gap is all about confidence and pivoting forward. Here is a proven 3-step script tailored for **${targetRole}**:
+
+1. **Be concise and positive:** *"During that period, I took intentional time to focus on professional upskilling, personal development, and independent projects."*
+2. **Highlight active learning & skills:** *"I dedicated over 150 hours to mastering modern practices in ${skills}, building end-to-end applications, and contributing to technical problem solving."*
+3. **Pivot immediately to the future:** *"Now I am completely energized and focused on bringing my expertise in ${targetRole} to deliver high-impact results for your team."*
+
+💡 **ATS Tip:** Focus on skill acquisition and continuous momentum in your timeline!`;
+  }
+
+  if (query.includes('skill') || query.includes('ats') || query.includes('keyword') || query.includes('score') || query.includes('tailor')) {
+    return `To maximize your ATS match score for **${targetRole}**, here are top recommendations for your resume:
+
+- **Core Technical Stack:** Ensure in-demand keywords like **${skills}**, *CI/CD, Cloud Architecture (AWS/GCP), Automated Testing*, and *RESTful APIs* are prominently placed.
+- **Section Headers:** Stick to standard titles like *Professional Summary, Work Experience, Education, Skills*.
+- **Keyword Density:** Mention your primary skills 2–3 times across your Summary and Work Experience bullets so ATS parsers recognize strong topical authority.
+- **Action Verbs:** Start every single bullet with strong verbs like *Architected, Engineered, Orchestrated, Optimized, Delivered*.`;
+  }
+
+  if (query.includes('bullet') || query.includes('improve') || query.includes('rewrite') || query.includes('phrase') || query.includes('achievement')) {
     return `Here are 3 high-impact ways to phrase your experience as a **${targetRole}** using power verbs and metrics:
 
 1. **Spearheaded core feature delivery:** *"Architected and deployed responsive modules utilizing ${skills.split(',')[0] || 'modern tech stack'}, reducing page load latency by 35% and improving user engagement across 50K+ monthly active users."*
@@ -271,14 +338,6 @@ Provide a direct, empowering, and highly actionable response formatted cleanly w
 3. **Cross-Functional Leadership:** *"Collaborated with product, UI/UX, and engineering stakeholders at ${latestExp.company || 'your organization'} to deliver mission-critical milestones 2 weeks ahead of schedule."*
 
 💡 **Pro-tip:** Use the **Google XYZ Formula**: *Accomplished [X], as measured by [Y], by doing [Z].*`;
-  }
-
-  if (query.includes('gap') || query.includes('break') || query.includes('transition')) {
-    return `Explaining a career gap is all about confidence and pivoting forward. Here is a proven 3-step script tailored for **${targetRole}**:
-
-1. **Be concise and positive:** *"During that period, I took intentional time to focus on professional upskilling, personal development, and independent projects."*
-2. **Highlight active learning & skills:** *"I dedicated over 150 hours to mastering modern practices in ${skills}, building end-to-end applications, and contributing to technical problem solving."*
-3. **Pivot immediately to the future:** *"Now I am completely energized and focused on bringing my expertise in ${targetRole} to deliver high-impact results for your team."*`;
   }
 
   return `As your AI Career Advisor for **${targetRole}**, I'm here to help you stand out! 

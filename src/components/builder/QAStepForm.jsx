@@ -223,7 +223,7 @@ export const QAStepForm = ({
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="qa-form-grid-2col">
             <div className="form-group">
               <label className="form-label" htmlFor="qa-email">
                 Email Address *
@@ -260,7 +260,7 @@ export const QAStepForm = ({
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="qa-form-grid-2col">
             <div className="form-group">
               <label className="form-label" htmlFor="qa-location">
                 Location (City, Country)
@@ -373,7 +373,7 @@ export const QAStepForm = ({
                 )}
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div className="qa-form-grid-2col">
                 <div className="form-group">
                   <label className="form-label">Company Name *</label>
                   <input
@@ -396,7 +396,7 @@ export const QAStepForm = ({
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div className="qa-form-grid-2col">
                 <div className="form-group">
                   <label className="form-label">Duration *</label>
                   <input
@@ -475,7 +475,7 @@ export const QAStepForm = ({
                 )}
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div className="qa-form-grid-2col">
                 <div className="form-group">
                   <label className="form-label">School / University *</label>
                   <input
@@ -498,7 +498,7 @@ export const QAStepForm = ({
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div className="qa-form-grid-2col">
                 <div className="form-group">
                   <label className="form-label">Graduation Year / Dates</label>
                   <input

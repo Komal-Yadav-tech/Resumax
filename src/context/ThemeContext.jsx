@@ -16,11 +16,26 @@ export const ThemeProvider = ({ children }) => {
     return 'light';
   });
 
+  const [themePreset, setThemePreset] = useState(() => {
+    try {
+      const saved = localStorage.getItem('resumax_admin_theme');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.preset || 'default';
+      }
+    } catch (e) {}
+    return 'default';
+  });
+
   useEffect(() => {
     // Apply theme attribute to html/root element
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('resumax_theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme-preset', themePreset);
+  }, [themePreset]);
 
   // Listen for system color-scheme changes if user hasn't manually set preference
   useEffect(() => {
@@ -48,7 +63,7 @@ export const ThemeProvider = ({ children }) => {
   const isDark = theme === 'dark';
 
   return (
-    <ThemeContext.Provider value={{ theme, isDark, toggleTheme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, isDark, toggleTheme, setTheme, themePreset, setThemePreset }}>
       {children}
     </ThemeContext.Provider>
   );

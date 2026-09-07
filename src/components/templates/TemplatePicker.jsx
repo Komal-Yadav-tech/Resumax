@@ -35,7 +35,7 @@ export const TemplatePicker = ({
   return (
     <div className="template-picker-container">
       <div className="template-picker-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+        <div className="template-picker-title-group">
           <Layout size={16} color="var(--accent)" />
           <span style={{ fontWeight: 600, fontSize: '0.875rem' }}>Select Template</span>
           {isCustomSelected && (
@@ -45,7 +45,7 @@ export const TemplatePicker = ({
           )}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div className="template-picker-actions">
           <button
             type="button"
             className="btn btn-outline btn-sm view-all-btn-header"

@@ -231,6 +231,15 @@ export const askResumeChatbot = async (message = '', resumeContext = {}, chatHis
   const latestExp = experience[0] || {};
   const query = message.toLowerCase().trim();
 
+  if (query.includes('skill') || query.includes('ats') || query.includes('keyword') || query.includes('score') || query.includes('tailor')) {
+    return `To maximize your ATS match score for **${targetRole}**, here are top recommendations for your resume:
+
+- **Core Technical Stack:** Ensure in-demand keywords like **${skills}**, *CI/CD, Cloud Architecture (AWS/GCP), Automated Testing*, and *RESTful APIs* are prominently placed.
+- **Section Headers:** Stick to standard titles like *Professional Summary, Work Experience, Education, Skills*.
+- **Keyword Density:** Mention your primary skills 2–3 times across your Summary and Work Experience bullets so ATS parsers recognize strong topical authority.
+- **Action Verbs:** Start every single bullet with strong verbs like *Architected, Engineered, Orchestrated, Optimized, Delivered*.`;
+  }
+
   if (query.includes('bullet') || query.includes('improve') || query.includes('rewrite') || query.includes('phrase') || query.includes('achievement')) {
     return `Here are 3 high-impact, ATS-optimized ways to phrase your experience as a **${targetRole}** using power action verbs and quantifiable metrics:
 
@@ -239,36 +248,6 @@ export const askResumeChatbot = async (message = '', resumeContext = {}, chatHis
 3. **Cross-Functional Leadership:** *"Collaborated with product, UI/UX, and engineering stakeholders at ${latestExp.company || 'your organization'} to deliver mission-critical milestones 2 weeks ahead of schedule."*
 
 💡 **Pro-tip:** When writing resume bullets, use the **Google XYZ Formula**: *Accomplished [X], as measured by [Y], by doing [Z].*`;
-  }
-
-  if (query.includes('gap') || query.includes('break') || query.includes('transition') || query.includes('pivot') || query.includes('unemployed') || query.includes('layoff')) {
-    return `Explaining a career gap is all about confidence, honesty, and pivoting forward. Here is a proven 3-step script tailored for your transition into **${targetRole}**:
-
-1. **Be concise and positive:** *"During that period, I took intentional time to focus on professional upskilling, personal development, and independent projects."*
-2. **Highlight active learning & skills:** *"I dedicated over 150 hours to mastering modern practices in ${skills}, building end-to-end applications, and contributing to technical problem solving."*
-3. **Pivot immediately to the future:** *"Now I am completely energized and focused on bringing my expertise in ${targetRole} to deliver high-impact results for your team."*
-
-💡 **ATS Tip:** On your resume, focus on years instead of months if the gap is under a year, or add a *"Continuous Education & Technical Projects"* section to show momentum!`;
-  }
-
-  if (query.includes('interview') || query.includes('question') || query.includes('prepare') || query.includes('practice') || query.includes('behavioral') || query.includes('technical')) {
-    return `Based on your resume for **${targetRole}** with core skills in **${skills}**, here are the top 4 interview questions you should prepare for:
-
-1. **Technical Architecture:** *"How do you design scalable applications with ${skills.split(',')[0] || 'your core stack'} while balancing performance and maintainability?"*
-2. **Leadership & Collaboration (STAR Method):** *"Tell me about a time at ${latestExp.company || 'your previous company'} when you faced a difficult technical disagreement. How did you align the team and deliver?"*
-3. **Problem Solving & Debugging:** *"Describe the most complex production bottleneck or bug you diagnosed. What metrics did you use to measure success?"*
-4. **Impact & Metrics:** *"Walk me through a project where you drove measurable business outcomes (speed, revenue, user retention)."*
-
-💡 **Strategy:** Structure your answers using the **STAR method** (Situation, Task, Action, Result) with specific percentages and outcomes!`;
-  }
-
-  if (query.includes('skill') || query.includes('ats') || query.includes('keyword') || query.includes('score') || query.includes('tailor')) {
-    return `To maximize your ATS match score for **${targetRole}**, here are top recommendations for your resume:
-
-- **Core Technical Stack:** Ensure in-demand keywords like **${skills}**, *CI/CD, Cloud Architecture (AWS/GCP), Automated Testing*, and *RESTful APIs* are prominently placed.
-- **Section Headers:** Stick to standard titles like *Professional Summary, Work Experience, Education, Skills*.
-- **Keyword Density:** Mention your primary skills 2–3 times across your Summary and Work Experience bullets so ATS parsers recognize strong topical authority.
-- **Action Verbs:** Start every single bullet with strong verbs like *Architected, Engineered, Orchestrated, Optimized, Delivered*.`;
   }
 
   return `As your AI Career Advisor for **${targetRole}**, I'm here to help you stand out! 
