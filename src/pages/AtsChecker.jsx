@@ -95,7 +95,7 @@ export const AtsChecker = ({ onNavigate }) => {
   return (
     <div className="ats-checker-page">
       {/* Top Navigation / Breadcrumb Header */}
-      <div className="ats-header-banner">
+      <div className="ats-header-banner reveal-up">
         <div className="ats-header-content">
           <div className="welcome-badge">
             <ShieldCheck size={14} /> 100% Free & Unlimited ATS Checker
@@ -130,7 +130,7 @@ export const AtsChecker = ({ onNavigate }) => {
 
       <div className="ats-main-grid">
         {/* Left Column: Job Description & Controls */}
-        <div className="ats-sidebar-col">
+        <div className="ats-sidebar-col reveal-left stagger-1">
           {/* Active Resume Summary Card */}
           <div className="ats-panel-card">
             <div className="ats-panel-title">
@@ -211,7 +211,7 @@ export const AtsChecker = ({ onNavigate }) => {
         </div>
 
         {/* Right Column: ScoreCard & Suggestions */}
-        <div className="ats-results-col">
+        <div className="ats-results-col reveal-right stagger-2">
           {evaluation ? (
             <>
               <ScoreCard evaluation={evaluation} />

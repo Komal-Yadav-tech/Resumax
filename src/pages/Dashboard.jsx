@@ -20,7 +20,7 @@ export const Dashboard = ({ onNavigate }) => {
   return (
     <div className="dashboard-container">
       {/* Welcome Banner */}
-      <section className="welcome-banner">
+      <section className="welcome-banner reveal-up">
         <div className="welcome-badge">
           <img src={logoImg} alt="AI" style={{ width: 14, height: 14, borderRadius: 'var(--radius-sm)' }} /> Unlimited & 100% Free AI Career Toolkit
         </div>
@@ -34,7 +34,7 @@ export const Dashboard = ({ onNavigate }) => {
       {/* Feature Navigation Cards */}
       <div className="dashboard-grid">
         {/* Card 1: AI Resume Builder */}
-        <div className="feature-card">
+        <div className="feature-card reveal-up stagger-1">
           <span className="badge-free">Free</span>
           <div
             className="feature-icon-box"
@@ -61,7 +61,7 @@ export const Dashboard = ({ onNavigate }) => {
         </div>
 
         {/* Card 2: ATS Strength Checker */}
-        <div className="feature-card">
+        <div className="feature-card reveal-up stagger-2">
           <span className="badge-free">Free</span>
           <div
             className="feature-icon-box"
@@ -88,7 +88,7 @@ export const Dashboard = ({ onNavigate }) => {
         </div>
 
         {/* Card 3: AI Career Chatbot */}
-        <div className="feature-card">
+        <div className="feature-card reveal-up stagger-3">
           <span className="badge-free">Free</span>
           <div
             className="feature-icon-box"
@@ -117,7 +117,7 @@ export const Dashboard = ({ onNavigate }) => {
 
       {/* Resumes Section */}
       <section style={{ marginTop: '2rem' }}>
-        <div className="section-header">
+        <div className="section-header reveal-up">
           <h2>My Resumes</h2>
           <button
             type="button"
@@ -129,7 +129,7 @@ export const Dashboard = ({ onNavigate }) => {
           </button>
         </div>
 
-        <div className="resumes-empty-card">
+        <div className="resumes-empty-card reveal-up stagger-2">
           <div
             style={{
               width: 56,
