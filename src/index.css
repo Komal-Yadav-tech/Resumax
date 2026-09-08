@@ -149,8 +149,10 @@ a:hover {
 }
 
 .navbar-container {
-  max-width: 1200px;
+  max-width: 1440px;
+  width: 100%;
   margin: 0 auto;
+  padding: 0 clamp(0.75rem, 2.5vw, 2rem);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -558,9 +560,9 @@ a:hover {
    ========================================================================== */
 
 .dashboard-container {
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem;
+  padding: clamp(1.5rem, 2.5vw, 2.75rem) clamp(1rem, 2.5vw, 2rem);
   width: 100%;
 }
 
@@ -568,7 +570,7 @@ a:hover {
   background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--accent-light) 100%);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 2.25rem 2rem;
+  padding: clamp(1.5rem, 2.5vw, 2.5rem) clamp(1.25rem, 2.5vw, 2.25rem);
   margin-bottom: 2.5rem;
   position: relative;
   overflow: hidden;
@@ -589,19 +591,21 @@ a:hover {
 }
 
 .welcome-banner h1 {
-  font-size: 1.85rem;
+  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
   margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
 }
 
 .welcome-banner p {
   color: var(--text-secondary);
-  font-size: 1rem;
-  max-width: 600px;
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+  max-width: 850px;
+  line-height: 1.6;
 }
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2.5rem;
 }
@@ -619,7 +623,7 @@ a:hover {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 2.5rem 2.5rem;
+  padding: clamp(1.75rem, 3vw, 3rem);
   box-shadow: var(--shadow-md);
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
@@ -636,7 +640,7 @@ a:hover {
 .showcase-grid {
   display: grid;
   grid-template-columns: 1.15fr 1fr;
-  gap: 2.5rem;
+  gap: clamp(1.75rem, 3.5vw, 3.5rem);
   align-items: center;
 }
 
@@ -1171,9 +1175,9 @@ a:hover {
    ========================================================================== */
 
 .builder-page-container {
-  max-width: 1400px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: clamp(1rem, 2.5vw, 2rem) clamp(0.75rem, 2vw, 1.5rem);
   width: 100%;
 }
 
@@ -4621,9 +4625,10 @@ body.template-gallery-active {
    ========================================================================== */
 
 .ats-checker-page {
-  max-width: 1280px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 4rem;
+  padding: clamp(1.5rem, 2.5vw, 2.5rem) clamp(1rem, 2.5vw, 2rem) 4rem;
+  width: 100%;
 }
 
 .ats-header-banner {
@@ -5069,9 +5074,10 @@ body.template-gallery-active {
    ========================================================================== */
 
 .career-advisor-page {
-  max-width: 1280px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 4rem;
+  padding: clamp(1.5rem, 2.5vw, 2.5rem) clamp(1rem, 2.5vw, 2rem) 4rem;
+  width: 100%;
 }
 
 .advisor-header-banner {
@@ -7848,9 +7854,13 @@ input:checked + .slider:before {
   }
   .welcome-banner {
     padding: 1.25rem 1rem;
+    border-radius: var(--radius-md);
   }
   .welcome-banner h1 {
     font-size: 1.35rem;
+  }
+  .welcome-banner p {
+    font-size: 0.88rem;
   }
   .dashboard-grid {
     grid-template-columns: 1fr !important;
@@ -7858,6 +7868,55 @@ input:checked + .slider:before {
   }
   .feature-card {
     padding: 1.25rem 1rem;
+  }
+
+  /* Mobile Showcase Cards Reflow */
+  .showcase-card {
+    padding: 1.25rem 1rem !important;
+    border-radius: var(--radius-md);
+  }
+  .showcase-grid,
+  .showcase-grid-reversed {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem;
+  }
+  .showcase-content h2 {
+    font-size: 1.3rem !important;
+  }
+  .showcase-desc {
+    font-size: 0.88rem !important;
+  }
+  .showcase-features-list li {
+    font-size: 0.85rem !important;
+  }
+  .showcase-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+  .showcase-actions .btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+  }
+  .showcase-visual {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .mockup-window {
+    width: 100%;
+  }
+
+  /* Prevent auto-zoom on form inputs on mobile / Android */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important;
   }
 
   /* Admin Panel Mobile Reflow */
