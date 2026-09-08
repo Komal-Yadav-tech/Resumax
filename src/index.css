@@ -149,10 +149,10 @@ a:hover {
 }
 
 .navbar-container {
-  max-width: 1440px;
+  max-width: min(1680px, 94vw);
   width: 100%;
   margin: 0 auto;
-  padding: 0 clamp(0.75rem, 2.5vw, 2rem);
+  padding: 0 clamp(0.75rem, 1.5vw, 1.5rem);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -560,9 +560,9 @@ a:hover {
    ========================================================================== */
 
 .dashboard-container {
-  max-width: 1440px;
+  max-width: min(1680px, 94vw);
   margin: 0 auto;
-  padding: clamp(1.5rem, 2.5vw, 2.75rem) clamp(1rem, 2.5vw, 2rem);
+  padding: clamp(1.5rem, 2vw, 2.5rem) clamp(1rem, 1.5vw, 1.75rem);
   width: 100%;
 }
 
@@ -570,8 +570,8 @@ a:hover {
   background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--accent-light) 100%);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: clamp(1.5rem, 2.5vw, 2.5rem) clamp(1.25rem, 2.5vw, 2.25rem);
-  margin-bottom: 2.5rem;
+  padding: clamp(1.5rem, 2.2vw, 2.25rem) clamp(1.25rem, 2.2vw, 2.25rem);
+  margin-bottom: 2rem;
   position: relative;
   overflow: hidden;
 }
@@ -591,15 +591,15 @@ a:hover {
 }
 
 .welcome-banner h1 {
-  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+  font-size: clamp(1.5rem, 2.2vw, 2.25rem);
   margin-bottom: 0.5rem;
   letter-spacing: -0.02em;
 }
 
 .welcome-banner p {
   color: var(--text-secondary);
-  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
-  max-width: 850px;
+  font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+  max-width: 1000px;
   line-height: 1.6;
 }
 
@@ -1175,9 +1175,9 @@ a:hover {
    ========================================================================== */
 
 .builder-page-container {
-  max-width: 1440px;
+  max-width: min(1680px, 94vw);
   margin: 0 auto;
-  padding: clamp(1rem, 2.5vw, 2rem) clamp(0.75rem, 2vw, 1.5rem);
+  padding: clamp(1rem, 2vw, 2rem) clamp(0.75rem, 1.5vw, 1.5rem);
   width: 100%;
 }
 
@@ -4625,9 +4625,9 @@ body.template-gallery-active {
    ========================================================================== */
 
 .ats-checker-page {
-  max-width: 1440px;
+  max-width: min(1680px, 94vw);
   margin: 0 auto;
-  padding: clamp(1.5rem, 2.5vw, 2.5rem) clamp(1rem, 2.5vw, 2rem) 4rem;
+  padding: clamp(1.5rem, 2vw, 2.5rem) clamp(1rem, 1.5vw, 2rem) 4rem;
   width: 100%;
 }
 
@@ -5074,9 +5074,9 @@ body.template-gallery-active {
    ========================================================================== */
 
 .career-advisor-page {
-  max-width: 1440px;
+  max-width: min(1680px, 94vw);
   margin: 0 auto;
-  padding: clamp(1.5rem, 2.5vw, 2.5rem) clamp(1rem, 2.5vw, 2rem) 4rem;
+  padding: clamp(1.5rem, 2vw, 2.5rem) clamp(1rem, 1.5vw, 2rem) 4rem;
   width: 100%;
 }
 
