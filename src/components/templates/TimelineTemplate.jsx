@@ -1,105 +1,77 @@
 import React from 'react';
-import { Mail, Phone, MapPin, Globe, Briefcase, GraduationCap, Calendar } from 'lucide-react';
+import { ResumeCanvasWrapper } from './ResumeCanvasWrapper';
+import { normalizeResumeData, isSectionVisible } from './templateData';
 
-export const TimelineTemplate = ({ answers = {}, generatedContent }) => {
+export const TimelineTemplate = ({ answers, generatedContent, customizations = {} }) => {
+  const data = normalizeResumeData(answers, generatedContent);
   const {
-    fullName = 'Alex Morgan',
-    contact = {},
-    targetJobTitle = 'Senior Frontend Engineer',
-    experience = [],
-    education = [],
-    skills = []
-  } = answers;
+    fullName,
+    targetJobTitle,
+    contact,
+    summary,
+    experience,
+    education,
+    milestones,
+    volunteering,
+    awards,
+    skills,
+    projects,
+    certifications,
+    achievements,
+    languages,
+    photo
+  } = data;
 
-  const summary =
-    generatedContent?.summary ||
-    `Proven ${targetJobTitle} with a demonstrated history of delivering scalable frontend and full-stack solutions. Experienced in mentoring engineers, architecting design systems, and driving continuous improvement across development lifecycles.`;
+  const showPhoto = customizations.showPhoto && (customizations.photoUrl || photo);
+  const photoSrc = customizations.photoUrl || photo;
 
   return (
-    <div className="resume-paper timeline-template" id="resume-export-target">
-      {/* Header */}
+    <ResumeCanvasWrapper templateId="timeline" customizations={customizations} className="timeline-template">
+      {/* Timeline Header */}
       <header className="timeline-header">
-        <h1 className="timeline-name">{fullName || 'Alex Morgan'}</h1>
-        <p className="timeline-role">{targetJobTitle || 'Senior Software Engineer'}</p>
-
-        <div className="timeline-contact-bar">
-          {(contact.email || 'alex.morgan@example.com') && (
-            <span className="timeline-contact-badge">
-              <Mail size={12} /> {contact.email || 'alex.morgan@example.com'}
-            </span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h1 className="timeline-name">{fullName}</h1>
+            <div className="timeline-role">{targetJobTitle}</div>
+          </div>
+          {showPhoto && (
+            <img src={photoSrc} alt={fullName} className="resume-candidate-photo timeline-photo" />
           )}
-          {(contact.phone || '+1 (555) 234-5678') && (
-            <span className="timeline-contact-badge">
-              <Phone size={12} /> {contact.phone || '+1 (555) 234-5678'}
-            </span>
-          )}
-          {(contact.location || 'San Francisco, CA') && (
-            <span className="timeline-contact-badge">
-              <MapPin size={12} /> {contact.location || 'San Francisco, CA'}
-            </span>
-          )}
-          {contact.website && (
-            <span className="timeline-contact-badge">
-              <Globe size={12} /> {contact.website}
-            </span>
-          )}
+        </div>
+        <div className="timeline-contact">
+          {[contact.email, contact.phone, contact.location, contact.website, contact.github]
+            .filter(Boolean)
+            .join('  •  ')}
         </div>
       </header>
 
-      {/* Summary */}
-      <section className="timeline-summary-section">
-        <h2 className="timeline-section-title">Career Synopsis</h2>
-        <p className="timeline-summary-text">{summary}</p>
-      </section>
+      {/* Base: Summary */}
+      {isSectionVisible('summary', customizations) && summary && (
+        <section className="timeline-section-plain">
+          <p className="timeline-summary-text">{summary}</p>
+        </section>
+      )}
 
-      {/* Chronological Timeline: Experience */}
-      <section className="timeline-section">
-        <h2 className="timeline-section-title">
-          <Briefcase size={15} /> Career Trajectory
-        </h2>
-
-        <div className="timeline-track-wrapper">
-          {experience.length === 0 ? (
-            <div className="timeline-node-entry">
-              <div className="timeline-marker">
-                <span className="timeline-dot" />
-              </div>
-              <div className="timeline-node-content">
-                <p style={{ color: '#64748b', fontSize: '0.85rem' }}>No experience records present.</p>
-              </div>
-            </div>
-          ) : (
-            experience.map((exp, idx) => {
-              const bullets =
-                exp.generatedBullets ||
+      {/* Timeline Extra: Career Timeline Nodes with Vertical Track & Year Dots */}
+      {isSectionVisible('experience', customizations) && experience?.length > 0 && (
+        <section className="timeline-section">
+          <h2 className="timeline-heading">CAREER TIMELINE</h2>
+          <div className="timeline-track">
+            {experience.map((exp, idx) => {
+              const bullets = exp.generatedBullets ||
                 (exp.achievements
                   ? exp.achievements.split('\n').filter((b) => b.trim().length > 0)
-                  : [
-                      `Led core engineering efforts as ${exp.role || 'Lead'} at ${exp.company || 'Innovate Inc'}, improving system uptime to 99.98%.`,
-                      `Streamlined deployment processes and coached team members in modern frameworks.`
-                    ]);
+                  : [`Led system implementations and team delivery at ${exp.company || 'Enterprise'}.`]);
 
               return (
-                <div key={exp.id || idx} className="timeline-node-entry">
-                  {/* Vertical line dot */}
-                  <div className="timeline-marker">
-                    <span className="timeline-dot" />
-                    <span className="timeline-connector-line" />
-                  </div>
-
-                  {/* Node Content */}
+                <div key={exp.id || idx} className="timeline-node">
+                  <div className="timeline-node-dot" />
                   <div className="timeline-node-content">
                     <div className="timeline-node-header">
-                      <div>
-                        <h3 className="timeline-node-title">{exp.role || 'Role Title'}</h3>
-                        <span className="timeline-node-company">{exp.company || 'Company'}</span>
-                        {exp.location && <span className="timeline-node-location"> • {exp.location}</span>}
-                      </div>
-                      <span className="timeline-date-chip">
-                        <Calendar size={11} /> {exp.duration || '2022 – Present'}
-                      </span>
+                      <strong className="timeline-node-title">{exp.role}</strong>
+                      <span className="timeline-year-badge">{exp.duration}</span>
                     </div>
-
+                    <div className="timeline-node-sub">{exp.company} {exp.location && `| ${exp.location}`}</div>
                     <ul className="timeline-bullets">
                       {bullets.map((b, bIdx) => (
                         <li key={bIdx}>{b.replace(/^[•\-\*]\s*/, '')}</li>
@@ -108,74 +80,82 @@ export const TimelineTemplate = ({ answers = {}, generatedContent }) => {
                   </div>
                 </div>
               );
-            })
-          )}
-        </div>
-      </section>
+            })}
+          </div>
+        </section>
+      )}
 
-      {/* Chronological Timeline: Education */}
-      <section className="timeline-section">
-        <h2 className="timeline-section-title">
-          <GraduationCap size={15} /> Academic Milestones
-        </h2>
-
-        <div className="timeline-track-wrapper">
-          {education.length === 0 ? (
-            <div className="timeline-node-entry">
-              <div className="timeline-marker">
-                <span className="timeline-dot" />
-              </div>
-              <div className="timeline-node-content">
-                <h3 className="timeline-node-title">B.S. in Computer Science</h3>
-                <span className="timeline-node-company">UC Berkeley</span>
-              </div>
-            </div>
-          ) : (
-            education.map((edu, idx) => (
-              <div key={edu.id || idx} className="timeline-node-entry">
-                <div className="timeline-marker">
-                  <span className="timeline-dot" />
-                  <span className="timeline-connector-line" />
-                </div>
+      {/* Timeline Extra: Education Timeline */}
+      {isSectionVisible('education', customizations) && education?.length > 0 && (
+        <section className="timeline-section">
+          <h2 className="timeline-heading">EDUCATION TIMELINE</h2>
+          <div className="timeline-track">
+            {education.map((edu, idx) => (
+              <div key={edu.id || idx} className="timeline-node">
+                <div className="timeline-node-dot timeline-dot-secondary" />
                 <div className="timeline-node-content">
                   <div className="timeline-node-header">
-                    <div>
-                      <h3 className="timeline-node-title">{edu.degree || 'Degree'}</h3>
-                      <span className="timeline-node-company">{edu.school || 'University'}</span>
-                      {edu.location && <span className="timeline-node-location"> • {edu.location}</span>}
-                    </div>
-                    <span className="timeline-date-chip">
-                      <Calendar size={11} /> {edu.year || 'Graduation'}
-                    </span>
+                    <strong className="timeline-node-title">{edu.degree}</strong>
+                    <span className="timeline-year-badge">{edu.year}</span>
                   </div>
+                  <div className="timeline-node-sub">{edu.school} {edu.location && `| ${edu.location}`}</div>
                 </div>
               </div>
-            ))
-          )}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      )}
 
-      {/* Skills */}
-      <section className="timeline-section">
-        <h2 className="timeline-section-title">Skills & Specializations</h2>
-        <div className="timeline-skills-container">
-          {skills.length > 0 ? (
-            skills.map((skill, sIdx) => (
-              <span key={sIdx} className="timeline-skill-pill">
-                {skill}
-              </span>
-            ))
-          ) : (
-            <>
-              <span className="timeline-skill-pill">React.js</span>
-              <span className="timeline-skill-pill">TypeScript</span>
-              <span className="timeline-skill-pill">Next.js</span>
-              <span className="timeline-skill-pill">Node.js</span>
-              <span className="timeline-skill-pill">System Architecture</span>
-            </>
-          )}
+      {/* Timeline Extra: Milestones & Volunteering */}
+      <div className="timeline-dual-row">
+        {isSectionVisible('extras', customizations) && isSectionVisible('milestones', customizations) && milestones?.length > 0 && (
+          <div className="timeline-col">
+            <h2 className="timeline-heading">CAREER MILESTONES</h2>
+            <div className="timeline-milestones-list">
+              {milestones.map((m, idx) => (
+                <div key={idx} className="timeline-milestone-item">
+                  <span className="timeline-milestone-year">{m.year}</span>
+                  <div>
+                    <strong>{m.title}:</strong> {m.note}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isSectionVisible('extras', customizations) && isSectionVisible('volunteering', customizations) && volunteering?.length > 0 && (
+          <div className="timeline-col">
+            <h2 className="timeline-heading">VOLUNTEERING & COMMUNITY</h2>
+            {volunteering.map((v, idx) => (
+              <div key={idx} className="timeline-milestone-item">
+                <span className="timeline-milestone-year">{v.year}</span>
+                <div>
+                  <strong>{v.role}</strong> — {v.organization}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Base: Skills, Projects, Awards & Languages */}
+      <div className="timeline-dual-row">
+        {isSectionVisible('skills', customizations) && skills?.length > 0 && (
+          <div className="timeline-col">
+            <h2 className="timeline-heading">SKILLS & COMPETENCIES</h2>
+            <p className="timeline-text">{skills.join(' • ')}</p>
+          </div>
+        )}
+        <div className="timeline-col">
+          <h2 className="timeline-heading">HONORS & LANGUAGES</h2>
+          <div className="timeline-text">
+            {awards?.slice(0, 1).map((a) => `${a.title} (${a.year})`).join('')}
+            {certifications?.length > 0 && ` • ${certifications[0].name}`}
+            {languages?.length > 0 && ` • ${languages.map((l) => l.language).join(', ')}`}
+          </div>
         </div>
-      </section>
-    </div>
+      </div>
+    </ResumeCanvasWrapper>
   );
 };

@@ -1,118 +1,183 @@
 import React from 'react';
+import { ResumeCanvasWrapper } from './ResumeCanvasWrapper';
+import { normalizeResumeData, isSectionVisible } from './templateData';
 
-export const AtsCompactTemplate = ({ answers = {}, generatedContent }) => {
+export const AtsCompactTemplate = ({ answers, generatedContent, customizations = {} }) => {
+  const data = normalizeResumeData(answers, generatedContent);
   const {
-    fullName = 'Alex Morgan',
-    contact = {},
-    targetJobTitle = 'Senior Frontend Engineer',
-    experience = [],
-    education = [],
-    skills = []
-  } = answers;
+    fullName,
+    targetJobTitle,
+    contact,
+    summary,
+    keySkills,
+    skills,
+    experience,
+    education,
+    projects,
+    certifications,
+    achievements,
+    languages,
+    publications,
+    training,
+    references,
+    photo
+  } = data;
 
-  const summary =
-    generatedContent?.summary ||
-    `Seasoned ${targetJobTitle} with proven history of optimizing application performance, leading cross-functional engineering teams, and shipping resilient production platforms under aggressive delivery timelines.`;
+  const showPhoto = customizations.showPhoto && (customizations.photoUrl || photo);
+  const photoSrc = customizations.photoUrl || photo;
 
   return (
-    <div className="resume-paper ats-compact-template" id="resume-export-target">
-      {/* Compact Inline Header */}
+    <ResumeCanvasWrapper templateId="ats-compact" customizations={customizations} className="ats-compact-template">
+      {/* Compact Top Header */}
       <header className="ats-compact-header">
-        <div className="ats-compact-top-row">
-          <h1 className="ats-compact-name">{fullName || 'Alex Morgan'}</h1>
-          <span className="ats-compact-title-tag">{targetJobTitle || 'Lead Engineer'}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <span className="ats-compact-name">{fullName}</span>
+            <span className="ats-compact-divider-pipe"> | </span>
+            <span className="ats-compact-role">{targetJobTitle}</span>
+          </div>
+          {showPhoto && (
+            <img src={photoSrc} alt={fullName} className="resume-candidate-photo ats-compact-photo" />
+          )}
         </div>
-        <div className="ats-compact-contact-line">
-          {[
-            contact.email || 'alex.morgan@example.com',
-            contact.phone || '+1 (555) 234-5678',
-            contact.location || 'San Francisco, CA',
-            contact.website
-          ]
+        <div className="ats-compact-contact">
+          {[contact.email, contact.phone, contact.location, contact.website, contact.github]
             .filter(Boolean)
-            .join(' | ')}
+            .join(' • ')}
         </div>
       </header>
 
-      {/* Summary */}
-      <section className="ats-compact-section">
-        <h2 className="ats-compact-heading">SUMMARY</h2>
-        <p className="ats-compact-summary-text">{summary}</p>
-      </section>
+      {/* ATS Compact Extra: KEY SKILLS INLINE SEPARATED BY | */}
+      {isSectionVisible('skills', customizations) && (
+        <section className="ats-compact-section">
+          <div className="ats-compact-skills-inline">
+            <span className="ats-compact-label">KEY SKILLS:</span>{' '}
+            {(keySkills?.length > 0 ? keySkills : skills)?.join(' | ')}
+          </div>
+        </section>
+      )}
 
-      {/* Skills Bar */}
-      <section className="ats-compact-section">
-        <h2 className="ats-compact-heading">CORE SKILLS</h2>
-        <p className="ats-compact-skills">
-          {skills.length > 0
-            ? skills.join(', ')
-            : 'JavaScript, TypeScript, React.js, Next.js, HTML5/CSS3, Tailwind, REST APIs, Git, Agile, Performance Optimization'}
-        </p>
-      </section>
+      {/* Base: Summary */}
+      {isSectionVisible('summary', customizations) && summary && (
+        <section className="ats-compact-section">
+          <h2 className="ats-compact-heading">PROFESSIONAL SUMMARY</h2>
+          <p className="ats-compact-text">{summary}</p>
+        </section>
+      )}
 
-      {/* Work Experience */}
-      <section className="ats-compact-section">
-        <h2 className="ats-compact-heading">PROFESSIONAL EXPERIENCE</h2>
-        {experience.length === 0 ? (
-          <p className="ats-compact-text">No experience listed yet.</p>
-        ) : (
-          experience.map((exp, idx) => {
-            const bullets =
-              exp.generatedBullets ||
+      {/* Base: Work Experience with 2-Column Bullets */}
+      {isSectionVisible('experience', customizations) && experience?.length > 0 && (
+        <section className="ats-compact-section">
+          <h2 className="ats-compact-heading">EXPERIENCE</h2>
+          {experience.map((exp, idx) => {
+            const bullets = exp.generatedBullets ||
               (exp.achievements
                 ? exp.achievements.split('\n').filter((b) => b.trim().length > 0)
-                : [
-                    `Spearheaded development as ${exp.role || 'Role'} at ${exp.company || 'Company'}, improving load speed by 35%.`,
-                    `Automated CI/CD pipelines to shorten deployment cycles by 2 days.`
-                  ]);
+                : [`Drove core engineering deliverables at ${exp.company || 'Enterprise'}, increasing output by 20%.`]);
 
             return (
-              <div key={exp.id || idx} className="ats-compact-item">
-                <div className="ats-compact-item-header">
-                  <div>
-                    <strong className="ats-compact-role">{exp.role || 'Role'}</strong>
-                    <span className="ats-compact-company"> — {exp.company || 'Company'}</span>
-                    {exp.location && <span className="ats-compact-location"> ({exp.location})</span>}
-                  </div>
-                  <span className="ats-compact-date">{exp.duration || '2022 – Present'}</span>
+              <div key={exp.id || idx} className="ats-compact-entry">
+                <div className="ats-compact-row">
+                  <strong>{exp.role} — {exp.company}</strong>
+                  <span>{exp.duration}</span>
                 </div>
-                <ul className="ats-compact-bullets">
-                  {bullets.map((bullet, bIdx) => (
-                    <li key={bIdx}>{bullet.replace(/^[•\-\*]\s*/, '')}</li>
+                {exp.location && <div className="ats-compact-subrow">{exp.location}</div>}
+                <ul className="ats-compact-two-col-bullets">
+                  {bullets.map((b, bIdx) => (
+                    <li key={bIdx}>{b.replace(/^[•\-\*]\s*/, '')}</li>
                   ))}
                 </ul>
               </div>
             );
-          })
-        )}
-      </section>
+          })}
+        </section>
+      )}
 
-      {/* Education */}
-      <section className="ats-compact-section">
-        <h2 className="ats-compact-heading">EDUCATION</h2>
-        {education.length === 0 ? (
-          <div className="ats-compact-item-header">
-            <div>
-              <strong>B.S. in Computer Science</strong>
-              <span> — UC Berkeley</span>
+      {/* Base: Education */}
+      {isSectionVisible('education', customizations) && education?.length > 0 && (
+        <section className="ats-compact-section">
+          <h2 className="ats-compact-heading">EDUCATION</h2>
+          {education.map((edu, idx) => (
+            <div key={edu.id || idx} className="ats-compact-row">
+              <span><strong>{edu.degree}</strong>, {edu.school}</span>
+              <span>{edu.year}</span>
             </div>
-            <span>2016 – 2020</span>
-          </div>
-        ) : (
-          education.map((edu, idx) => (
-            <div key={edu.id || idx} className="ats-compact-item">
-              <div className="ats-compact-item-header">
-                <div>
-                  <strong className="ats-compact-role">{edu.degree || 'Degree'}</strong>
-                  <span className="ats-compact-company"> — {edu.school || 'School'}</span>
-                  {edu.location && <span className="ats-compact-location"> ({edu.location})</span>}
-                </div>
-                <span className="ats-compact-date">{edu.year || 'Graduation Year'}</span>
+          ))}
+        </section>
+      )}
+
+      {/* Base: Projects */}
+      {isSectionVisible('projects', customizations) && projects?.length > 0 && (
+        <section className="ats-compact-section">
+          <h2 className="ats-compact-heading">SELECTED PROJECTS</h2>
+          <div className="ats-compact-projects-grid">
+            {projects.map((proj, idx) => (
+              <div key={proj.id || idx} className="ats-compact-proj-item">
+                <strong>{proj.title}:</strong> {proj.description}
               </div>
-            </div>
-          ))
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Base & Extras: Certifications, Training & Publications */}
+      <div className="ats-compact-multi-col">
+        {isSectionVisible('certifications', customizations) && certifications?.length > 0 && (
+          <div className="ats-compact-col-half">
+            <h2 className="ats-compact-heading">CERTIFICATIONS</h2>
+            <ul className="ats-compact-list-tight">
+              {certifications.map((c, idx) => (
+                <li key={idx}>{c.name} ({c.year})</li>
+              ))}
+            </ul>
+          </div>
         )}
-      </section>
-    </div>
+        {isSectionVisible('extras', customizations) && isSectionVisible('training', customizations) && training?.length > 0 && (
+          <div className="ats-compact-col-half">
+            <h2 className="ats-compact-heading">TRAINING</h2>
+            <ul className="ats-compact-list-tight">
+              {training.map((t, idx) => (
+                <li key={idx}>{t.program} — {t.provider}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {/* ATS Compact Extra: Publications */}
+      {isSectionVisible('extras', customizations) && isSectionVisible('publications', customizations) && publications?.length > 0 && (
+        <section className="ats-compact-section">
+          <h2 className="ats-compact-heading">PUBLICATIONS</h2>
+          <ul className="ats-compact-list-tight">
+            {publications.map((pub, idx) => (
+              <li key={idx}>"{pub.title}" — {pub.journal} ({pub.year})</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Base: Achievements & Languages */}
+      <div className="ats-compact-footer-row">
+        {isSectionVisible('achievements', customizations) && achievements?.length > 0 && (
+          <div style={{ flex: 1 }}>
+            <span className="ats-compact-label">HONORS:</span>{' '}
+            {achievements.map((a) => a.title).join(' • ')}
+          </div>
+        )}
+        {isSectionVisible('languages', customizations) && languages?.length > 0 && (
+          <div style={{ flex: 1, textAlign: 'right' }}>
+            <span className="ats-compact-label">LANGUAGES:</span>{' '}
+            {languages.map((l) => `${l.language} (${l.proficiency})`).join(', ')}
+          </div>
+        )}
+      </div>
+
+      {/* ATS Compact Extra: References */}
+      {isSectionVisible('extras', customizations) && isSectionVisible('references', customizations) && (
+        <div className="ats-compact-references">
+          <em>References: {references}</em>
+        </div>
+      )}
+    </ResumeCanvasWrapper>
   );
 };

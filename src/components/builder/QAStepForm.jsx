@@ -617,12 +617,168 @@ export const QAStepForm = ({
         </div>
       )}
 
-      {/* Step 6: Review & AI Generator */}
+      {/* Step 6: Projects, Certifications & Credentials */}
       {currentStep === 6 && (
         <div className="qa-step-card">
           <div className="qa-step-header">
+            <div className="qa-step-badge">
+              <Sparkles size={16} /> Step 6 of 7
+            </div>
+            <h2>Projects, Certifications & Credentials</h2>
+            <p>Add key projects, certifications, and achievements to bolster your candidacy across all templates.</p>
+          </div>
+
+          {/* Professional Summary Field */}
+          <div className="form-group">
+            <label className="form-label" htmlFor="qa-summary">
+              Professional Summary
+            </label>
+            <textarea
+              id="qa-summary"
+              className="form-textarea"
+              rows={3}
+              placeholder="Brief summary of your professional background, strengths, and goals..."
+              value={answers.summary || ''}
+              onChange={(e) => setAnswers({ ...answers, summary: e.target.value })}
+            />
+          </div>
+
+          {/* Key Projects */}
+          <div className="form-group">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+              <label className="form-label" style={{ margin: 0 }}>
+                Projects ({(answers.projects || []).length})
+              </label>
+              <button
+                type="button"
+                className="btn btn-outline btn-xs"
+                onClick={() => {
+                  const currentProjects = answers.projects || [];
+                  setAnswers({
+                    ...answers,
+                    projects: [
+                      ...currentProjects,
+                      { id: Date.now(), title: '', role: 'Developer', duration: '', description: '' }
+                    ]
+                  });
+                }}
+              >
+                <Plus size={12} /> Add Project
+              </button>
+            </div>
+
+            {(answers.projects || []).map((proj, pIdx) => (
+              <div key={proj.id || pIdx} className="dynamic-entry-card" style={{ padding: '0.85rem', marginBottom: '0.75rem', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Project Title (e.g. CloudPulse Platform)"
+                    value={proj.title || ''}
+                    onChange={(e) => {
+                      const updated = [...(answers.projects || [])];
+                      updated[pIdx] = { ...updated[pIdx], title: e.target.value };
+                      setAnswers({ ...answers, projects: updated });
+                    }}
+                  />
+                  <input
+                    type="text"
+                    className="form-input"
+                    style={{ width: '35%' }}
+                    placeholder="Duration (e.g. 2023)"
+                    value={proj.duration || ''}
+                    onChange={(e) => {
+                      const updated = [...(answers.projects || [])];
+                      updated[pIdx] = { ...updated[pIdx], duration: e.target.value };
+                      setAnswers({ ...answers, projects: updated });
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-outline btn-xs"
+                    onClick={() => {
+                      const updated = (answers.projects || []).filter((_, i) => i !== pIdx);
+                      setAnswers({ ...answers, projects: updated });
+                    }}
+                    title="Remove Project"
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                </div>
+                <textarea
+                  className="form-textarea"
+                  rows={2}
+                  placeholder="Brief description of tech stack, architecture, and impact..."
+                  value={proj.description || ''}
+                  onChange={(e) => {
+                    const updated = [...(answers.projects || [])];
+                    updated[pIdx] = { ...updated[pIdx], description: e.target.value };
+                    setAnswers({ ...answers, projects: updated });
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Certifications & Languages Quick Row */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
+            <div className="form-group">
+              <label className="form-label">Certifications (comma separated)</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="AWS Architect, Meta React Architect"
+                value={
+                  Array.isArray(answers.certifications)
+                    ? answers.certifications.map((c) => (typeof c === 'string' ? c : c.name)).join(', ')
+                    : ''
+                }
+                onChange={(e) => {
+                  const names = e.target.value.split(',').map((s) => s.trim()).filter(Boolean);
+                  setAnswers({
+                    ...answers,
+                    certifications: names.map((name, idx) => ({ id: idx + 1, name, issuer: 'Verified', year: '2023' }))
+                  });
+                }}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Languages (comma separated)</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="English (Native), Spanish (Fluent)"
+                value={
+                  Array.isArray(answers.languages)
+                    ? answers.languages.map((l) => (typeof l === 'string' ? l : `${l.language} (${l.proficiency})`)).join(', ')
+                    : ''
+                }
+                onChange={(e) => {
+                  const items = e.target.value.split(',').map((s) => s.trim()).filter(Boolean);
+                  setAnswers({
+                    ...answers,
+                    languages: items.map((item, idx) => {
+                      const match = item.match(/^([^(]+)(?:\(([^)]+)\))?/);
+                      return {
+                        id: idx + 1,
+                        language: match ? match[1].trim() : item,
+                        proficiency: match && match[2] ? match[2].trim() : 'Professional'
+                      };
+                    })
+                  });
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Step 7: Review & AI Generator */}
+      {currentStep === 7 && (
+        <div className="qa-step-card">
+          <div className="qa-step-header">
             <div className="qa-step-badge" style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}>
-              <img src={logoImg} alt="AI" style={{ width: 16, height: 16, borderRadius: 'var(--radius-sm)' }} /> Final Step
+              <img src={logoImg} alt="AI" style={{ width: 16, height: 16, borderRadius: 'var(--radius-sm)' }} /> Step 7 of 7
             </div>
             <h2>Generate Your AI-Powered Resume</h2>
             <p>
@@ -645,7 +801,7 @@ export const QAStepForm = ({
               <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{answers.targetJobTitle}</span>
             </div>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
-              {answers.contact.email} • {answers.contact.location || 'Remote'} • {answers.skills.length} Skills Listed
+              {answers.contact?.email} • {answers.contact?.location || 'Remote'} • {answers.skills?.length || 0} Skills Listed
             </p>
           </div>
 

@@ -30,6 +30,7 @@ export const calculateFormatScore = (resumeData = {}, selectedTemplate = 'classi
   const feedback = [];
 
   const answers = resumeData.answers || resumeData;
+  const rawText = answers.rawText || '';
   const contact = answers.contact || {};
   const experience = answers.experience || [];
   const education = answers.education || [];
@@ -37,40 +38,49 @@ export const calculateFormatScore = (resumeData = {}, selectedTemplate = 'classi
 
   // 1. Contact Information Completeness (Max 30 pts)
   let contactScore = 0;
-  if (answers.fullName && answers.fullName.trim().length >= 2) contactScore += 8;
-  else feedback.push({ type: 'warning', text: 'Add your full name in the header.' });
+  const hasName = Boolean(answers.fullName && answers.fullName.trim().length >= 2);
+  if (hasName) contactScore += 8;
+  else feedback.push({ type: 'warning', text: 'Add your full candidate name in the header.' });
 
-  if (contact.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email)) contactScore += 8;
+  const emailPattern = /[^\s@]+@[^\s@]+\.[^\s@]+/;
+  const hasEmail = Boolean((contact.email && emailPattern.test(contact.email)) || (rawText && emailPattern.test(rawText)));
+  if (hasEmail) contactScore += 8;
   else feedback.push({ type: 'critical', text: 'Provide a valid professional email address.' });
 
-  if (contact.phone && contact.phone.trim().length >= 7) contactScore += 7;
+  const phonePattern = /(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/;
+  const hasPhone = Boolean((contact.phone && contact.phone.trim().length >= 7) || (rawText && phonePattern.test(rawText)));
+  if (hasPhone) contactScore += 7;
   else feedback.push({ type: 'warning', text: 'Include a contact phone number.' });
 
-  if (contact.location && contact.location.trim().length >= 2) contactScore += 7;
-  else feedback.push({ type: 'info', text: 'Add your city and state/country.' });
+  const hasLocation = Boolean((contact.location && contact.location.trim().length >= 2) || (rawText && /(remote|hybrid|[a-z]+,\s*[a-z]{2})/i.test(rawText)));
+  if (hasLocation) contactScore += 7;
+  else feedback.push({ type: 'info', text: 'Add your city and state/country for recruiter location filters.' });
 
   breakdown.contactCompleteness = contactScore;
   score += contactScore;
 
   // 2. Standard Section Headers (Max 35 pts)
   let headerScore = 0;
-  const hasSummary = Boolean(resumeData.generatedContent?.summary || answers.targetJobTitle);
+  const hasSummary = Boolean(resumeData.generatedContent?.summary || answers.targetJobTitle || (rawText && /(summary|objective|profile|about me)/i.test(rawText)));
   if (hasSummary) headerScore += 8;
   else feedback.push({ type: 'warning', text: 'Include a Professional Summary section.' });
 
-  if (experience.length > 0) {
+  const hasExperience = Boolean(experience.length > 0 || (rawText && /(experience|work history|employment|career history)/i.test(rawText)));
+  if (hasExperience) {
     headerScore += 12;
   } else {
-    feedback.push({ type: 'critical', text: 'Add at least one Work Experience entry with role and company.' });
+    feedback.push({ type: 'critical', text: 'Add at least one Work Experience section with role and company.' });
   }
 
-  if (education.length > 0) {
+  const hasEducation = Boolean(education.length > 0 || (rawText && /(education|university|college|bachelor|master|b\.s|b\.a|degree)/i.test(rawText)));
+  if (hasEducation) {
     headerScore += 8;
   } else {
     feedback.push({ type: 'warning', text: 'Include an Education section with your school/degree.' });
   }
 
-  if (skills.length >= 3) {
+  const hasSkills = Boolean(skills.length >= 3 || (rawText && /(skills|technologies|proficiencies|competencies)/i.test(rawText)));
+  if (hasSkills) {
     headerScore += 7;
   } else {
     feedback.push({ type: 'warning', text: 'List at least 3-5 core technical or professional skills.' });
@@ -95,23 +105,29 @@ export const calculateFormatScore = (resumeData = {}, selectedTemplate = 'classi
   if (!ATS_SAFE_TEMPLATES.includes(selectedTemplate)) {
     feedback.push({
       type: 'tip',
-      text: 'For the highest ATS parse rate, choose an ATS-Safe template (Classic, ATS Pro, ATS Simple, ATS Compact, Academic).'
+      text: 'For highest ATS parse rate, choose an ATS-Safe template (Classic, ATS Pro, ATS Simple, ATS Compact, Academic).'
     });
   }
 
   // 4. Content Density & Length (Max 15 pts)
   let densityScore = 15;
-  const totalBullets = experience.reduce((acc, exp) => {
+  let totalBullets = experience.reduce((acc, exp) => {
     const bCount = exp.generatedBullets?.length || (exp.achievements ? exp.achievements.split('\n').filter(Boolean).length : 0);
     return acc + bCount;
   }, 0);
 
+  if (rawText && totalBullets < 2) {
+    // Count bullet-like lines in rawText
+    const rawBulletMatches = rawText.match(/^[•\-\*]\s*.+/gm) || rawText.split('\n').filter((l) => l.trim().length > 30);
+    totalBullets = rawBulletMatches ? rawBulletMatches.length : 3;
+  }
+
   if (totalBullets < 2) {
-    densityScore = 5;
+    densityScore = 6;
     feedback.push({ type: 'warning', text: 'Add more bullet points under your work experience (2-4 per role recommended).' });
-  } else if (totalBullets > 15) {
+  } else if (totalBullets > 18) {
     densityScore = 10;
-    feedback.push({ type: 'tip', text: 'Keep resume concise — aim for 3-5 high-impact bullets per position.' });
+    feedback.push({ type: 'tip', text: 'Keep resume concise — aim for 3-5 high-impact bullets per position to stay within 1 page.' });
   }
 
   breakdown.lengthAndDensity = densityScore;
@@ -201,6 +217,7 @@ export const evaluateResumeAtsStrength = async (
       bulletStrength: aiResult.bulletStrength,
       quantifiableMetricsScore: aiResult.quantifiableMetricsScore,
       keywordMatchScore: aiResult.keywordMatchScore,
+      targetKeywords: aiResult.targetKeywords || [],
       matchedKeywords: aiResult.matchedKeywords || [],
       missingKeywords: aiResult.missingKeywords || []
     },

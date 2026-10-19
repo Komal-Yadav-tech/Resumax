@@ -21,7 +21,7 @@ export const exportResumeToPdf = async (elementOrId, fileName = 'Resume.pdf') =>
   }
 
   const opt = {
-    margin: [8, 8, 8, 8],
+    margin: 0,
     filename: fileName,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: {

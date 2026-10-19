@@ -14,3 +14,5 @@ export { TEMPLATES, POPULAR_TEMPLATE_IDS } from './templateConstants';
 export { TemplateThumbnail } from './TemplateThumbnail';
 export { TemplateGalleryModal } from './TemplateGalleryModal';
 export { TemplatePicker } from './TemplatePicker';
+export { ResumeCanvasWrapper } from './ResumeCanvasWrapper';
+export { normalizeResumeData, isSectionVisible, BASE_SECTIONS, DEFAULT_EXTRAS } from './templateData';

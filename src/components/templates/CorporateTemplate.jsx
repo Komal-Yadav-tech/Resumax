@@ -1,154 +1,159 @@
 import React from 'react';
-import { Mail, Phone, MapPin, Globe, Award } from 'lucide-react';
+import { ResumeCanvasWrapper } from './ResumeCanvasWrapper';
+import { normalizeResumeData, isSectionVisible } from './templateData';
 
-export const CorporateTemplate = ({ answers = {}, generatedContent }) => {
+export const CorporateTemplate = ({ answers, generatedContent, customizations = {} }) => {
+  const data = normalizeResumeData(answers, generatedContent);
   const {
-    fullName = 'Alex Morgan',
-    contact = {},
-    targetJobTitle = 'Vice President of Engineering',
-    experience = [],
-    education = [],
-    skills = []
-  } = answers;
+    fullName,
+    targetJobTitle,
+    contact,
+    summary,
+    leadership,
+    achievements,
+    training,
+    awards,
+    experience,
+    education,
+    projects,
+    skills,
+    certifications,
+    languages,
+    photo
+  } = data;
 
-  const summary =
-    generatedContent?.summary ||
-    `Distinguished executive leader with comprehensive expertise in organizational transformation, enterprise technology roadmaps, and cross-functional operational excellence. Proven capability in scaling engineering divisions, mitigating operational risk, and delivering stakeholder value across multi-million dollar business portfolios.`;
+  const showPhoto = customizations.showPhoto && (customizations.photoUrl || photo);
+  const photoSrc = customizations.photoUrl || photo;
 
   return (
-    <div className="resume-paper corporate-template" id="resume-export-target">
-      {/* Dark Solid Executive Header Bar */}
+    <ResumeCanvasWrapper templateId="corporate" customizations={customizations} className="corporate-template">
+      {/* Corporate Navy Header Bar */}
       <header className="corporate-header-bar">
         <div className="corporate-header-inner">
-          <h1 className="corporate-name">{fullName || 'Alex Morgan'}</h1>
-          <p className="corporate-subtitle">{targetJobTitle || 'Executive Director & Technology Leader'}</p>
-
-          <div className="corporate-contact-row">
-            {(contact.email || 'alex.morgan@example.com') && (
-              <span className="corporate-contact-item">
-                <Mail size={12} /> {contact.email || 'alex.morgan@example.com'}
-              </span>
-            )}
-            {(contact.phone || '+1 (555) 234-5678') && (
-              <span className="corporate-contact-item">
-                <Phone size={12} /> {contact.phone || '+1 (555) 234-5678'}
-              </span>
-            )}
-            {(contact.location || 'San Francisco, CA') && (
-              <span className="corporate-contact-item">
-                <MapPin size={12} /> {contact.location || 'San Francisco, CA'}
-              </span>
-            )}
-            {contact.website && (
-              <span className="corporate-contact-item">
-                <Globe size={12} /> {contact.website}
-              </span>
-            )}
+          <div className="corporate-name-title">
+            <h1 className="corporate-name">{fullName}</h1>
+            <div className="corporate-role">{targetJobTitle}</div>
           </div>
+          {showPhoto && (
+            <img src={photoSrc} alt={fullName} className="resume-candidate-photo corporate-photo" />
+          )}
+        </div>
+        <div className="corporate-gold-divider" />
+        <div className="corporate-contact-line">
+          {[contact.email, contact.phone, contact.location, contact.website, contact.github]
+            .filter(Boolean)
+            .join('  •  ')}
         </div>
       </header>
 
-      {/* Main Body */}
-      <div className="corporate-body">
-        {/* Executive Profile */}
+      {/* Corporate Extra: Executive Summary */}
+      {isSectionVisible('summary', customizations) && summary && (
         <section className="corporate-section">
-          <h2 className="corporate-heading">Executive Profile</h2>
+          <h2 className="corporate-heading">Executive Summary</h2>
           <p className="corporate-text">{summary}</p>
         </section>
+      )}
 
-        {/* Leadership Experience */}
+      {/* Corporate Extra: Key Achievements with Metrics */}
+      {isSectionVisible('achievements', customizations) && achievements?.length > 0 && (
         <section className="corporate-section">
-          <h2 className="corporate-heading">Professional Experience</h2>
-          {experience.length === 0 ? (
-            <p className="corporate-text" style={{ fontStyle: 'italic', color: '#666' }}>
-              No executive positions recorded yet.
-            </p>
-          ) : (
-            experience.map((exp, idx) => {
-              const bullets =
-                exp.generatedBullets ||
-                (exp.achievements
-                  ? exp.achievements.split('\n').filter((b) => b.trim().length > 0)
-                  : [
-                      `Directed strategic initiatives as ${exp.role || 'Executive'} at ${exp.company || 'Global Corp'}, expanding market footprint by 28%.`,
-                      `Orchestrated organizational restructuring across multiple agile business units.`
-                    ]);
-
-              return (
-                <div key={exp.id || idx} className="corporate-entry">
-                  <div className="corporate-entry-top">
-                    <div>
-                      <h3 className="corporate-role">{exp.role || 'Vice President'}</h3>
-                      <span className="corporate-company">{exp.company || 'Enterprise Solutions Inc.'}</span>
-                    </div>
-                    <div className="corporate-meta-right">
-                      <span className="corporate-date">{exp.duration || '2021 – Present'}</span>
-                      {exp.location && <span className="corporate-loc">{exp.location}</span>}
-                    </div>
-                  </div>
-                  <ul className="corporate-bullets">
-                    {bullets.map((bullet, bIdx) => (
-                      <li key={bIdx}>{bullet.replace(/^[•\-\*]\s*/, '')}</li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })
-          )}
-        </section>
-
-        {/* Education & Credentials */}
-        <section className="corporate-section">
-          <h2 className="corporate-heading">Education & Credentials</h2>
-          {education.length === 0 ? (
-            <div className="corporate-entry-top">
-              <div>
-                <h3 className="corporate-role">B.S. in Computer Science & Business Management</h3>
-                <span className="corporate-company">University of California, Berkeley</span>
+          <h2 className="corporate-heading">Key Achievements & Value Metrics</h2>
+          <div className="corporate-achievements-grid">
+            {achievements.map((ach, idx) => (
+              <div key={idx} className="corporate-achievement-card">
+                <div className="corporate-achievement-title">{ach.title}</div>
+                <div className="corporate-achievement-metric">{ach.metric || ach.organization}</div>
               </div>
-              <span className="corporate-date">2016 – 2020</span>
-            </div>
-          ) : (
-            education.map((edu, idx) => (
-              <div key={edu.id || idx} className="corporate-entry">
-                <div className="corporate-entry-top">
-                  <div>
-                    <h3 className="corporate-role">{edu.degree || 'Degree'}</h3>
-                    <span className="corporate-company">{edu.school || 'University'}</span>
-                  </div>
-                  <div className="corporate-meta-right">
-                    <span className="corporate-date">{edu.year || 'Graduation Year'}</span>
-                    {edu.location && <span className="corporate-loc">{edu.location}</span>}
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </section>
-
-        {/* Core Competencies */}
-        <section className="corporate-section">
-          <h2 className="corporate-heading">Core Competencies & Strategic Capabilities</h2>
-          <div className="corporate-competencies-grid">
-            {skills.length > 0 ? (
-              skills.map((skill, sIdx) => (
-                <div key={sIdx} className="corporate-competency-item">
-                  <span className="corporate-bullet-square">■</span> {skill}
-                </div>
-              ))
-            ) : (
-              <>
-                <div className="corporate-competency-item"><span className="corporate-bullet-square">■</span> Strategic Planning</div>
-                <div className="corporate-competency-item"><span className="corporate-bullet-square">■</span> Executive Leadership</div>
-                <div className="corporate-competency-item"><span className="corporate-bullet-square">■</span> Enterprise Architecture</div>
-                <div className="corporate-competency-item"><span className="corporate-bullet-square">■</span> Cross-Functional Alignment</div>
-                <div className="corporate-competency-item"><span className="corporate-bullet-square">■</span> Risk Governance</div>
-                <div className="corporate-competency-item"><span className="corporate-bullet-square">■</span> Budget & P&L Oversight</div>
-              </>
-            )}
+            ))}
           </div>
         </section>
+      )}
+
+      {/* Base: Professional Experience */}
+      {isSectionVisible('experience', customizations) && experience?.length > 0 && (
+        <section className="corporate-section">
+          <h2 className="corporate-heading">Leadership & Executive Experience</h2>
+          {experience.map((exp, idx) => {
+            const bullets = exp.generatedBullets ||
+              (exp.achievements
+                ? exp.achievements.split('\n').filter((b) => b.trim().length > 0)
+                : [`Directed operational engineering and cross-functional teams at ${exp.company || 'Enterprise'}.`]);
+
+            return (
+              <div key={exp.id || idx} className="corporate-job">
+                <div className="corporate-job-header">
+                  <strong>{exp.role}</strong>
+                  <span className="corporate-date">{exp.duration}</span>
+                </div>
+                <div className="corporate-company">{exp.company} {exp.location && `| ${exp.location}`}</div>
+                <ul className="corporate-bullets">
+                  {bullets.map((b, bIdx) => (
+                    <li key={bIdx}>{b.replace(/^[•\-\*]\s*/, '')}</li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </section>
+      )}
+
+      {/* Corporate Extra: Leadership Initiatives */}
+      {isSectionVisible('extras', customizations) && isSectionVisible('leadership', customizations) && leadership?.length > 0 && (
+        <section className="corporate-section">
+          <h2 className="corporate-heading">Strategic Leadership</h2>
+          <ul className="corporate-bullets">
+            {leadership.map((lead, idx) => (
+              <li key={idx}>
+                <strong>{lead.role}:</strong> {lead.description}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Base: Education & Projects */}
+      <div className="corporate-dual-row">
+        {isSectionVisible('education', customizations) && education?.length > 0 && (
+          <div className="corporate-col">
+            <h2 className="corporate-heading">Education</h2>
+            {education.map((edu, idx) => (
+              <div key={idx} className="corporate-edu">
+                <strong>{edu.degree}</strong>
+                <div>{edu.school} ({edu.year})</div>
+              </div>
+            ))}
+          </div>
+        )}
+        {isSectionVisible('projects', customizations) && projects?.length > 0 && (
+          <div className="corporate-col">
+            <h2 className="corporate-heading">Enterprise Projects</h2>
+            {projects.slice(0, 2).map((p, idx) => (
+              <div key={idx} className="corporate-edu">
+                <strong>{p.title}</strong>
+                <p className="corporate-text" style={{ fontSize: '0.8rem' }}>{p.description}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+
+      {/* Base & Extras: Training, Awards, Certifications & Skills */}
+      <div className="corporate-dual-row">
+        {isSectionVisible('skills', customizations) && skills?.length > 0 && (
+          <div className="corporate-col">
+            <h2 className="corporate-heading">Core Competencies</h2>
+            <p className="corporate-text">{skills.join(', ')}</p>
+          </div>
+        )}
+        <div className="corporate-col">
+          <h2 className="corporate-heading">Credentials & Honors</h2>
+          <div className="corporate-text">
+            {certifications?.slice(0, 2).map((c) => c.name).join(' • ')}
+            {awards?.length > 0 && ` • ${awards[0].title}`}
+            {languages?.length > 0 && ` • ${languages.map((l) => l.language).join(', ')}`}
+          </div>
+        </div>
+      </div>
+    </ResumeCanvasWrapper>
   );
 };

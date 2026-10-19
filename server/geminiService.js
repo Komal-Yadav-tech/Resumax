@@ -139,6 +139,7 @@ export const analyzeAtsWithAI = async (resumeData, jobDescription = '') => {
   });
 
   const fullResumeText = [
+    answers.rawText || '',
     answers.fullName || '',
     answers.targetJobTitle || '',
     summary,
@@ -159,6 +160,7 @@ ${jobDescription}
 
 Evaluate and return in strict JSON format:
 {
+  "targetKeywords": ["keyword1", "keyword2", "keyword3"],
   "matchedKeywords": ["keyword1", "keyword2"],
   "missingKeywords": ["keyword3", "keyword4"],
   "bulletStrength": "Strong" | "Moderate" | "Needs Improvement",
@@ -188,6 +190,7 @@ Evaluate and return in strict JSON format:
 
   let matchedKeywords = [];
   let missingKeywords = [];
+  let targetKeywords = [];
   let keywordMatchScore = 85;
 
   if (jobDescription && jobDescription.trim().length > 20) {
@@ -201,7 +204,7 @@ Evaluate and return in strict JSON format:
       )
     ).slice(0, 8);
 
-    const targetKeywords = Array.from(new Set([...jdKeywords, ...dynamicKeywords]));
+    targetKeywords = Array.from(new Set([...jdKeywords, ...dynamicKeywords]));
     targetKeywords.forEach((kw) => {
       if (fullResumeText.includes(kw.toLowerCase())) matchedKeywords.push(kw);
       else missingKeywords.push(kw);
@@ -210,6 +213,7 @@ Evaluate and return in strict JSON format:
     const ratio = targetKeywords.length > 0 ? matchedKeywords.length / targetKeywords.length : 0.8;
     keywordMatchScore = Math.min(100, Math.max(25, Math.round(ratio * 100)));
   } else {
+    targetKeywords = COMMON_KEYWORDS.slice(0, 10);
     matchedKeywords = COMMON_KEYWORDS.filter((kw) => fullResumeText.includes(kw.toLowerCase())).slice(0, 8);
     missingKeywords = COMMON_KEYWORDS.filter((kw) => !fullResumeText.includes(kw.toLowerCase())).slice(0, 5);
   }
@@ -251,6 +255,7 @@ Evaluate and return in strict JSON format:
   }
 
   return {
+    targetKeywords,
     matchedKeywords,
     missingKeywords,
     bulletStrength,

@@ -1,68 +1,72 @@
 import React from 'react';
+import { ResumeCanvasWrapper } from './ResumeCanvasWrapper';
+import { normalizeResumeData, isSectionVisible } from './templateData';
 
-export const ClassicTemplate = ({ answers, generatedContent }) => {
+export const ClassicTemplate = ({ answers, generatedContent, customizations = {} }) => {
+  const data = normalizeResumeData(answers, generatedContent);
   const {
-    fullName = 'Alex Morgan',
-    contact = {},
-    targetJobTitle = 'Senior Frontend Engineer',
-    experience = [],
-    education = [],
-    skills = []
-  } = answers;
+    fullName,
+    targetJobTitle,
+    contact,
+    summary,
+    experience,
+    education,
+    skills,
+    projects,
+    certifications,
+    achievements,
+    languages,
+    extracurriculars,
+    photo
+  } = data;
 
-  const summary =
-    generatedContent?.summary ||
-    `Results-driven ${targetJobTitle} with proven experience in building scalable solutions, collaborating across cross-functional teams, and achieving operational efficiency.`;
+  const showPhoto = customizations.showPhoto && (customizations.photoUrl || photo);
+  const photoSrc = customizations.photoUrl || photo;
 
   return (
-    <div className="resume-paper classic-template" id="resume-export-target">
-      {/* ATS Header: Name + Contact Line */}
-      <div className="classic-header">
-        <h1 className="classic-name">{fullName || 'Alex Morgan'}</h1>
+    <ResumeCanvasWrapper templateId="classic" customizations={customizations} className="classic-template">
+      {/* ATS Header: Centered with full contact */}
+      <header className="classic-header">
+        {showPhoto && (
+          <div className="classic-photo-wrapper">
+            <img src={photoSrc} alt={fullName} className="resume-candidate-photo" />
+          </div>
+        )}
+        <h1 className="classic-name">{fullName}</h1>
+        <div className="classic-role-subtitle">{targetJobTitle}</div>
         <div className="classic-contact">
-          {[
-            contact.email || 'alex.morgan@example.com',
-            contact.phone || '+1 (555) 234-5678',
-            contact.location || 'San Francisco, CA',
-            contact.website
-          ]
+          {[contact.email, contact.phone, contact.location, contact.website, contact.github]
             .filter(Boolean)
             .join(' | ')}
         </div>
-      </div>
+      </header>
 
-      {/* Professional Summary */}
-      <section className="classic-section">
-        <h2 className="classic-heading">Professional Summary</h2>
-        <p className="classic-text">{summary}</p>
-      </section>
+      {/* Base: Professional Summary */}
+      {isSectionVisible('summary', customizations) && summary && (
+        <section className="classic-section">
+          <h2 className="classic-heading">Professional Summary</h2>
+          <p className="classic-text">{summary}</p>
+        </section>
+      )}
 
-      {/* Work Experience */}
-      <section className="classic-section">
-        <h2 className="classic-heading">Work Experience</h2>
-        {experience.length === 0 ? (
-          <p className="classic-text" style={{ fontStyle: 'italic', color: '#666' }}>
-            No work experience added yet.
-          </p>
-        ) : (
-          experience.map((exp, idx) => {
-            const bullets =
-              exp.generatedBullets ||
+      {/* Base: Experience */}
+      {isSectionVisible('experience', customizations) && experience?.length > 0 && (
+        <section className="classic-section">
+          <h2 className="classic-heading">Work Experience</h2>
+          {experience.map((exp, idx) => {
+            const bullets = exp.generatedBullets ||
               (exp.achievements
                 ? exp.achievements.split('\n').filter((b) => b.trim().length > 0)
-                : [
-                    `Executed key initiatives as ${exp.role || 'Professional'} at ${exp.company || 'Company'}, boosting operational efficiency by 25%.`,
-                    `Collaborated with cross-functional stakeholders to deliver project milestones on schedule.`
-                  ]);
+                : [`Executed strategic initiatives as ${exp.role || 'Specialist'} at ${exp.company || 'Organization'}, driving 25% efficiency.`]);
 
             return (
               <div key={exp.id || idx} className="classic-item">
                 <div className="classic-row">
-                  <strong>{exp.role || 'Job Role'}</strong>
-                  <span>{exp.duration || '2022 – Present'}</span>
+                  <strong>{exp.role}</strong>
+                  <span>{exp.duration}</span>
                 </div>
-                <div className="classic-row" style={{ fontStyle: 'italic', marginBottom: '0.35rem' }}>
-                  <span>{exp.company || 'Company Name'}</span>
+                <div className="classic-row classic-subrow">
+                  <span>{exp.company}</span>
                   {exp.location && <span>{exp.location}</span>}
                 </div>
                 <ul className="classic-bullets">
@@ -72,40 +76,102 @@ export const ClassicTemplate = ({ answers, generatedContent }) => {
                 </ul>
               </div>
             );
-          })
-        )}
-      </section>
+          })}
+        </section>
+      )}
 
-      {/* Education */}
-      <section className="classic-section">
-        <h2 className="classic-heading">Education</h2>
-        {education.length === 0 ? (
-          <p className="classic-text" style={{ fontStyle: 'italic', color: '#666' }}>
-            No education added yet.
-          </p>
-        ) : (
-          education.map((edu, idx) => (
+      {/* Base: Education */}
+      {isSectionVisible('education', customizations) && education?.length > 0 && (
+        <section className="classic-section">
+          <h2 className="classic-heading">Education</h2>
+          {education.map((edu, idx) => (
             <div key={edu.id || idx} className="classic-item">
               <div className="classic-row">
-                <strong>{edu.school || 'University Name'}</strong>
-                <span>{edu.year || '2020 – 2024'}</span>
+                <strong>{edu.school}</strong>
+                <span>{edu.year}</span>
               </div>
-              <div className="classic-row" style={{ fontStyle: 'italic' }}>
-                <span>{edu.degree || 'Degree / Major'}</span>
+              <div className="classic-row classic-subrow">
+                <span>{edu.degree}</span>
                 {edu.location && <span>{edu.location}</span>}
               </div>
             </div>
-          ))
-        )}
-      </section>
+          ))}
+        </section>
+      )}
 
-      {/* Skills */}
-      <section className="classic-section">
-        <h2 className="classic-heading">Skills</h2>
-        <p className="classic-text">
-          {skills.length > 0 ? skills.join(', ') : 'JavaScript, React, TypeScript, Node.js, Project Management'}
-        </p>
-      </section>
-    </div>
+      {/* Base: Skills */}
+      {isSectionVisible('skills', customizations) && skills?.length > 0 && (
+        <section className="classic-section">
+          <h2 className="classic-heading">Skills</h2>
+          <p className="classic-text">{skills.join(', ')}</p>
+        </section>
+      )}
+
+      {/* Base: Projects */}
+      {isSectionVisible('projects', customizations) && projects?.length > 0 && (
+        <section className="classic-section">
+          <h2 className="classic-heading">Key Projects</h2>
+          {projects.map((proj, idx) => (
+            <div key={proj.id || idx} className="classic-item">
+              <div className="classic-row">
+                <strong>{proj.title}</strong>
+                <span>{proj.duration || ''}</span>
+              </div>
+              <p className="classic-text">{proj.description}</p>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {/* Base: Certifications */}
+      {isSectionVisible('certifications', customizations) && certifications?.length > 0 && (
+        <section className="classic-section">
+          <h2 className="classic-heading">Certifications</h2>
+          <div className="classic-list-inline">
+            {certifications.map((cert, idx) => (
+              <span key={cert.id || idx} className="classic-inline-item">
+                • <strong>{cert.name}</strong> ({cert.issuer}, {cert.year})
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Base: Achievements */}
+      {isSectionVisible('achievements', customizations) && achievements?.length > 0 && (
+        <section className="classic-section">
+          <h2 className="classic-heading">Key Achievements</h2>
+          <ul className="classic-bullets">
+            {achievements.map((ach, idx) => (
+              <li key={ach.id || idx}>
+                <strong>{ach.title}</strong> — {ach.metric || ach.organization} ({ach.year})
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Base: Languages */}
+      {isSectionVisible('languages', customizations) && languages?.length > 0 && (
+        <section className="classic-section">
+          <h2 className="classic-heading">Languages</h2>
+          <p className="classic-text">
+            {languages.map((l) => `${l.language} (${l.proficiency})`).join(' • ')}
+          </p>
+        </section>
+      )}
+
+      {/* Classic Extra: Extracurriculars */}
+      {isSectionVisible('extras', customizations) && isSectionVisible('extracurriculars', customizations) && extracurriculars?.length > 0 && (
+        <section className="classic-section">
+          <h2 className="classic-heading">Extracurricular Activities</h2>
+          <ul className="classic-bullets">
+            {extracurriculars.map((extra, idx) => (
+              <li key={idx}>{extra}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </ResumeCanvasWrapper>
   );
 };

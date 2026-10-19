@@ -5,16 +5,23 @@ import { QAStepForm } from '../components/builder/QAStepForm';
 import { ResumePreview } from '../components/builder/ResumePreview';
 import { generateResumeContent } from '../services/aiService';
 
+import { DEFAULT_EXTRAS, BASE_SECTIONS } from '../components/templates/templateData';
+import { TemplateGalleryModal } from '../components/templates/TemplateGalleryModal';
+
 const DEFAULT_ANSWERS = {
   fullName: 'Alex Morgan',
   contact: {
     email: 'alex.morgan@example.com',
     phone: '+1 (555) 234-5678',
     location: 'San Francisco, CA',
-    website: 'linkedin.com/in/alexmorgan'
+    website: 'linkedin.com/in/alexmorgan',
+    github: 'github.com/alexmorgan',
+    portfolio: 'alexmorgan.dev'
   },
+  photo: '',
   targetJobTitle: 'Senior Frontend Engineer',
   experienceLevel: 'Senior-Level',
+  summary: DEFAULT_EXTRAS.summary,
   experience: [
     {
       id: 1,
@@ -55,10 +62,13 @@ const DEFAULT_ANSWERS = {
     'Git & GitHub',
     'Agile / Scrum',
     'Performance Optimization'
-  ]
+  ],
+  projects: DEFAULT_EXTRAS.projects,
+  certifications: DEFAULT_EXTRAS.certifications,
+  achievements: DEFAULT_EXTRAS.achievements,
+  languages: DEFAULT_EXTRAS.languages,
+  ...DEFAULT_EXTRAS
 };
-
-import { TemplateGalleryModal } from '../components/templates/TemplateGalleryModal';
 
 export const Builder = ({
   onNavigate,
@@ -71,8 +81,41 @@ export const Builder = ({
 
   const [answers, setAnswers] = useState(() => {
     const saved = localStorage.getItem('resumax_builder_draft');
-    return saved ? JSON.parse(saved) : DEFAULT_ANSWERS;
+    if (!saved) return DEFAULT_ANSWERS;
+    try {
+      const parsed = JSON.parse(saved);
+      return { ...DEFAULT_ANSWERS, ...parsed };
+    } catch {
+      return DEFAULT_ANSWERS;
+    }
   });
+
+  const [customizations, setCustomizations] = useState(() => {
+    const saved = localStorage.getItem('resumax_builder_customizations');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        // fallback
+      }
+    }
+    return {
+      fontStyle: 'Inter',
+      fontSize: 'Medium',
+      themeColor: 'blue',
+      layout: 'default',
+      spacing: 'Normal',
+      showPhoto: false,
+      photoUrl: '',
+      hiddenSections: {},
+      sectionOrder: BASE_SECTIONS.map((s) => s.id)
+    };
+  });
+
+  // Auto-save customizations
+  useEffect(() => {
+    localStorage.setItem('resumax_builder_customizations', JSON.stringify(customizations));
+  }, [customizations]);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedTemplate, setSelectedTemplate] = useState(() => {
@@ -213,10 +256,13 @@ export const Builder = ({
         <div className={`builder-column preview-col ${activeMobileTab === 'form' ? 'mobile-hidden' : ''}`}>
           <ResumePreview
             answers={answers}
+            setAnswers={setAnswers}
             generatedContent={generatedContent}
             selectedTemplate={selectedTemplate}
             onSelectTemplate={handleSelectTemplate}
             onOpenGallery={() => setIsTemplateGalleryOpen(true)}
+            customizations={customizations}
+            setCustomizations={setCustomizations}
           />
         </div>
       </div>

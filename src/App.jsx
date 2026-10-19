@@ -10,7 +10,6 @@ import { Dashboard } from './pages/Dashboard';
 import { Builder } from './pages/Builder';
 import { AtsChecker } from './pages/AtsChecker';
 import { CareerAdvisor } from './pages/CareerAdvisor';
-import { FloatingChatWidget } from './components/chatbot/FloatingChatWidget';
 import { FeedbackModal } from './components/feedback/FeedbackModal';
 import { Sparkles, ArrowRight, X } from 'lucide-react';
 
@@ -212,12 +211,7 @@ export const App = () => {
         {currentPage === 'advisor' && user && <CareerAdvisor onNavigate={navigateTo} />}
       </main>
 
-      {/* Floating Quick Advisor: hidden when on welcome, admin, or Template Selection page */}
-      {!isTemplateGalleryOpen &&
-        currentPage !== 'welcome' &&
-        currentPage !== 'admin' && (
-          <FloatingChatWidget onNavigate={navigateTo} currentPage={currentPage} />
-        )}
+
 
       {/* Session Review / Feedback Modal */}
       <FeedbackModal />

@@ -1,90 +1,128 @@
 import React from 'react';
-import { Mail, Phone, MapPin, Globe } from 'lucide-react';
+import { Mail, Phone, MapPin, Globe, Sparkles } from 'lucide-react';
+import { ResumeCanvasWrapper } from './ResumeCanvasWrapper';
+import { normalizeResumeData, isSectionVisible } from './templateData';
 
-export const ModernTemplate = ({ answers, generatedContent }) => {
+export const ModernTemplate = ({ answers, generatedContent, customizations = {} }) => {
+  const data = normalizeResumeData(answers, generatedContent);
   const {
-    fullName = 'Alex Morgan',
-    contact = {},
-    targetJobTitle = 'Senior Frontend Engineer',
-    experience = [],
-    education = [],
-    skills = []
-  } = answers;
+    fullName,
+    targetJobTitle,
+    contact,
+    summary,
+    skills,
+    softSkills,
+    experience,
+    education,
+    projects,
+    certifications,
+    achievements,
+    languages,
+    interests,
+    photo
+  } = data;
 
-  const summary =
-    generatedContent?.summary ||
-    `Dynamic and impact-driven ${targetJobTitle} with a strong foundation in modern technology architectures, agile execution, and cross-functional team delivery.`;
+  const showPhoto = customizations.showPhoto && (customizations.photoUrl || photo);
+  const photoSrc = customizations.photoUrl || photo;
 
   return (
-    <div className="resume-paper modern-template" id="resume-export-target">
-      {/* Modern Accent Header */}
-      <header className="modern-header">
-        <div className="modern-header-accent-bar" />
-        <div className="modern-header-content">
-          <h1 className="modern-name">{fullName || 'Alex Morgan'}</h1>
-          <p className="modern-title">{targetJobTitle || 'Senior Frontend Engineer'}</p>
-
-          <div className="modern-contact-grid">
-            {(contact.email || 'alex.morgan@example.com') && (
+    <ResumeCanvasWrapper templateId="modern" customizations={customizations} className="modern-template">
+      {/* Modern Gradient Header & Profile Card */}
+      <header className="modern-header-band">
+        <div className="modern-profile-card">
+          <div className="modern-profile-left">
+            {showPhoto && (
+              <img src={photoSrc} alt={fullName} className="resume-candidate-photo modern-avatar-photo" />
+            )}
+            <div>
+              <h1 className="modern-name">{fullName}</h1>
+              <p className="modern-title">{targetJobTitle}</p>
+            </div>
+          </div>
+          <div className="modern-contact-pills-row">
+            {contact.email && (
               <span className="modern-contact-pill">
-                <Mail size={13} className="modern-icon" /> {contact.email || 'alex.morgan@example.com'}
+                <Mail size={11} /> {contact.email}
               </span>
             )}
-            {(contact.phone || '+1 (555) 234-5678') && (
+            {contact.phone && (
               <span className="modern-contact-pill">
-                <Phone size={13} className="modern-icon" /> {contact.phone || '+1 (555) 234-5678'}
+                <Phone size={11} /> {contact.phone}
               </span>
             )}
-            {(contact.location || 'San Francisco, CA') && (
+            {contact.location && (
               <span className="modern-contact-pill">
-                <MapPin size={13} className="modern-icon" /> {contact.location || 'San Francisco, CA'}
+                <MapPin size={11} /> {contact.location}
               </span>
             )}
             {contact.website && (
               <span className="modern-contact-pill">
-                <Globe size={13} className="modern-icon" /> {contact.website}
+                <Globe size={11} /> {contact.website}
               </span>
             )}
           </div>
         </div>
       </header>
 
-      {/* Summary */}
-      <section className="modern-section">
-        <h2 className="modern-heading">
-          <span className="modern-heading-pill">About Me</span>
-        </h2>
-        <p className="modern-summary">{summary}</p>
-      </section>
+      {/* Modern Extra: Summary Profile Card */}
+      {isSectionVisible('summary', customizations) && summary && (
+        <section className="modern-section">
+          <div className="modern-category-tag">
+            <span>ABOUT ME</span>
+          </div>
+          <p className="modern-summary-text">{summary}</p>
+        </section>
+      )}
 
-      {/* Experience */}
-      <section className="modern-section">
-        <h2 className="modern-heading">
-          <span className="modern-heading-pill">Work Experience</span>
-        </h2>
-        {experience.length === 0 ? (
-          <p style={{ fontSize: '0.85rem', color: '#64748b' }}>No experience listed yet.</p>
-        ) : (
-          experience.map((exp, idx) => {
-            const bullets =
-              exp.generatedBullets ||
+      {/* Modern Extra: Skill Pills & Soft Skills Bar */}
+      {isSectionVisible('skills', customizations) && (
+        <section className="modern-section">
+          <div className="modern-category-tag">
+            <span>CORE COMPETENCIES & SKILL PILLS</span>
+          </div>
+          <div className="modern-skills-pill-wrap">
+            {skills?.map((skill, sIdx) => (
+              <span key={sIdx} className="modern-skill-pill">
+                {skill}
+              </span>
+            ))}
+          </div>
+          {/* Soft Skills Bar */}
+          {isSectionVisible('extras', customizations) && softSkills?.length > 0 && (
+            <div className="modern-soft-skills-bar">
+              <span className="modern-soft-label">Strengths:</span>
+              {softSkills.map((ss, idx) => (
+                <span key={idx} className="modern-soft-badge">
+                  ✓ {ss}
+                </span>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Base: Experience */}
+      {isSectionVisible('experience', customizations) && experience?.length > 0 && (
+        <section className="modern-section">
+          <div className="modern-category-tag">
+            <span>WORK EXPERIENCE</span>
+          </div>
+          {experience.map((exp, idx) => {
+            const bullets = exp.generatedBullets ||
               (exp.achievements
                 ? exp.achievements.split('\n').filter((b) => b.trim().length > 0)
-                : [
-                    `Led engineering initiatives as ${exp.role || 'Specialist'} at ${exp.company || 'Company'}, achieving 25% throughput optimization.`,
-                    `Partnered with product managers and architects to build scalable components.`
-                  ]);
+                : [`Drove technical deliverables at ${exp.company || 'Enterprise'}, boosting product reliability.`]);
 
             return (
               <div key={exp.id || idx} className="modern-job-card">
-                <div className="modern-job-title-row">
+                <div className="modern-job-header">
                   <div>
-                    <span className="modern-role">{exp.role || 'Role'}</span>
-                    <span className="modern-company"> @ {exp.company || 'Company'}</span>
+                    <span className="modern-role">{exp.role}</span>
+                    <span className="modern-company"> @ {exp.company}</span>
                   </div>
-                  <span className="modern-badge-date">{exp.duration || '2022 – Present'}</span>
+                  <span className="modern-date-badge">{exp.duration}</span>
                 </div>
-                {exp.location && <div className="modern-job-location">{exp.location}</div>}
+                {exp.location && <div className="modern-location-sub">{exp.location}</div>}
                 <ul className="modern-bullets">
                   {bullets.map((b, bIdx) => (
                     <li key={bIdx}>{b.replace(/^[•\-\*]\s*/, '')}</li>
@@ -92,50 +130,80 @@ export const ModernTemplate = ({ answers, generatedContent }) => {
                 </ul>
               </div>
             );
-          })
-        )}
-      </section>
+          })}
+        </section>
+      )}
 
-      {/* Education */}
-      <section className="modern-section">
-        <h2 className="modern-heading">
-          <span className="modern-heading-pill">Education</span>
-        </h2>
-        {education.length === 0 ? (
-          <p style={{ fontSize: '0.85rem', color: '#64748b' }}>No education listed yet.</p>
-        ) : (
-          education.map((edu, idx) => (
-            <div key={edu.id || idx} className="modern-edu-card">
-              <div className="modern-job-title-row">
-                <div>
-                  <span className="modern-role">{edu.degree || 'Degree / Major'}</span>
-                  <span className="modern-company"> — {edu.school || 'School'}</span>
-                </div>
-                <span className="modern-badge-date">{edu.year || '2020 – 2024'}</span>
-              </div>
-              {edu.location && <div className="modern-job-location">{edu.location}</div>}
+      {/* Base: Education & Projects Grid */}
+      <div className="modern-dual-grid">
+        {isSectionVisible('education', customizations) && education?.length > 0 && (
+          <div className="modern-col">
+            <div className="modern-category-tag">
+              <span>EDUCATION</span>
             </div>
-          ))
+            {education.map((edu, idx) => (
+              <div key={edu.id || idx} className="modern-edu-item">
+                <div className="modern-edu-degree">{edu.degree}</div>
+                <div className="modern-edu-school">{edu.school} ({edu.year})</div>
+              </div>
+            ))}
+          </div>
         )}
-      </section>
 
-      {/* Skills */}
-      <section className="modern-section">
-        <h2 className="modern-heading">
-          <span className="modern-heading-pill">Core Competencies</span>
-        </h2>
-        <div className="modern-skills-wrapper">
-          {skills.length > 0 ? (
-            skills.map((skill) => (
-              <span key={skill} className="modern-skill-capsule">
-                {skill}
-              </span>
-            ))
-          ) : (
-            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>JavaScript, React, Node.js</span>
+        {isSectionVisible('projects', customizations) && projects?.length > 0 && (
+          <div className="modern-col">
+            <div className="modern-category-tag">
+              <span>FEATURED PROJECTS</span>
+            </div>
+            {projects.slice(0, 2).map((proj, idx) => (
+              <div key={proj.id || idx} className="modern-proj-item">
+                <div className="modern-proj-title">{proj.title}</div>
+                <div className="modern-proj-desc">{proj.description}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Base: Certifications & Interests */}
+      <div className="modern-dual-grid">
+        {isSectionVisible('certifications', customizations) && certifications?.length > 0 && (
+          <div className="modern-col">
+            <div className="modern-category-tag">
+              <span>CERTIFICATIONS</span>
+            </div>
+            <div className="modern-cert-list">
+              {certifications.map((c, idx) => (
+                <div key={idx} className="modern-cert-row">
+                  ★ <strong>{c.name}</strong> ({c.year})
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Modern Extra: Interests & Languages */}
+        <div className="modern-col">
+          {isSectionVisible('languages', customizations) && languages?.length > 0 && (
+            <div style={{ marginBottom: '0.4rem' }}>
+              <div className="modern-category-tag">
+                <span>LANGUAGES</span>
+              </div>
+              <div className="modern-lang-line">
+                {languages.map((l) => `${l.language} (${l.proficiency})`).join(' • ')}
+              </div>
+            </div>
+          )}
+          {isSectionVisible('extras', customizations) && isSectionVisible('interests', customizations) && interests?.length > 0 && (
+            <div>
+              <div className="modern-category-tag">
+                <span>INTERESTS</span>
+              </div>
+              <div className="modern-interests-line">{interests.join(' • ')}</div>
+            </div>
           )}
         </div>
-      </section>
-    </div>
+      </div>
+    </ResumeCanvasWrapper>
   );
 };

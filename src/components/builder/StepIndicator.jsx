@@ -7,7 +7,8 @@ export const STEPS = [
   { id: 3, name: 'Experience', label: 'Work History' },
   { id: 4, name: 'Education', label: 'Education' },
   { id: 5, name: 'Skills', label: 'Skills' },
-  { id: 6, name: 'AI Review', label: 'Generate' }
+  { id: 6, name: 'Projects & More', label: 'Projects & Credentials' },
+  { id: 7, name: 'AI Review', label: 'Generate' }
 ];
 
 export const StepIndicator = ({ currentStep, onSelectStep }) => {

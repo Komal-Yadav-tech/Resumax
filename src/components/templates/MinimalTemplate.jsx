@@ -1,110 +1,207 @@
 import React from 'react';
+import { ResumeCanvasWrapper } from './ResumeCanvasWrapper';
+import { normalizeResumeData, isSectionVisible } from './templateData';
 
-export const MinimalTemplate = ({ answers, generatedContent }) => {
+export const MinimalTemplate = ({ answers, generatedContent, customizations = {} }) => {
+  const data = normalizeResumeData(answers, generatedContent);
   const {
-    fullName = 'Alex Morgan',
-    contact = {},
-    targetJobTitle = 'Senior Frontend Engineer',
-    experience = [],
-    education = [],
-    skills = []
-  } = answers;
+    fullName,
+    targetJobTitle,
+    contact,
+    summary,
+    quote,
+    experience,
+    education,
+    projects,
+    skills,
+    awards,
+    certifications,
+    achievements,
+    languages,
+    photo
+  } = data;
 
-  const summary =
-    generatedContent?.summary ||
-    `Experienced ${targetJobTitle} specializing in high-performance application development, systematic problem resolution, and cross-functional leadership.`;
+  const showPhoto = customizations.showPhoto && (customizations.photoUrl || photo);
+  const photoSrc = customizations.photoUrl || photo;
 
   return (
-    <div className="resume-paper minimal-template" id="resume-export-target">
-      {/* Minimal Header */}
+    <ResumeCanvasWrapper templateId="minimal" customizations={customizations} className="minimal-template">
+      {/* Minimalist Editorial Header */}
       <header className="minimal-header">
-        <h1 className="minimal-name">{fullName || 'Alex Morgan'}</h1>
-        <p className="minimal-title">{targetJobTitle || 'Senior Frontend Engineer'}</p>
-        <div className="minimal-contact">
-          {[
-            contact.email || 'alex.morgan@example.com',
-            contact.phone || '+1 (555) 234-5678',
-            contact.location || 'San Francisco, CA',
-            contact.website
-          ]
-            .filter(Boolean)
-            .join(' • ')}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div>
+            <h1 className="minimal-name">{fullName}</h1>
+            <p className="minimal-title">{targetJobTitle}</p>
+          </div>
+          {showPhoto && (
+            <img src={photoSrc} alt={fullName} className="resume-candidate-photo minimal-photo" />
+          )}
         </div>
+        <div className="minimal-contact">
+          {[contact.email, contact.phone, contact.location, contact.website, contact.github]
+            .filter(Boolean)
+            .join('  /  ')}
+        </div>
+        {/* Minimal Extra: Summary Quote */}
+        {isSectionVisible('extras', customizations) && quote && (
+          <div className="minimal-quote-box">{quote}</div>
+        )}
       </header>
 
-      {/* Summary */}
-      <section className="minimal-section">
-        <h2 className="minimal-heading">Summary</h2>
-        <p className="minimal-summary-text">{summary}</p>
-      </section>
-
-      {/* Experience */}
-      <section className="minimal-section">
-        <h2 className="minimal-heading">Experience</h2>
-        {experience.length === 0 ? (
-          <p className="minimal-muted">No experience entries provided.</p>
-        ) : (
-          experience.map((exp, idx) => {
-            const bullets =
-              exp.generatedBullets ||
-              (exp.achievements
-                ? exp.achievements.split('\n').filter((b) => b.trim().length > 0)
-                : [
-                    `Managed development lifecycle as ${exp.role || 'Role'} at ${exp.company || 'Company'}, improving sprint velocity by 25%.`,
-                    `Engineered reliable solutions and collaborated with engineering leadership.`
-                  ]);
-
-            return (
-              <div key={exp.id || idx} className="minimal-entry">
-                <div className="minimal-entry-header">
-                  <div>
-                    <span className="minimal-entry-role">{exp.role || 'Role'}</span>
-                    <span className="minimal-entry-company">, {exp.company || 'Company'}</span>
-                  </div>
-                  <span className="minimal-entry-date">{exp.duration || '2022 – Present'}</span>
-                </div>
-                {exp.location && <div className="minimal-muted">{exp.location}</div>}
-                <ul className="minimal-bullets">
-                  {bullets.map((b, bIdx) => (
-                    <li key={bIdx}>{b.replace(/^[•\-\*]\s*/, '')}</li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })
-        )}
-      </section>
-
-      {/* Education */}
-      <section className="minimal-section">
-        <h2 className="minimal-heading">Education</h2>
-        {education.length === 0 ? (
-          <p className="minimal-muted">No education entries provided.</p>
-        ) : (
-          education.map((edu, idx) => (
-            <div key={edu.id || idx} className="minimal-entry">
-              <div className="minimal-entry-header">
-                <div>
-                  <span className="minimal-entry-role">{edu.degree || 'Degree / Major'}</span>
-                  <span className="minimal-entry-company">, {edu.school || 'School'}</span>
-                </div>
-                <span className="minimal-entry-date">{edu.year || '2020 – 2024'}</span>
-              </div>
-              {edu.location && <div className="minimal-muted">{edu.location}</div>}
+      {/* Base: Summary */}
+      {isSectionVisible('summary', customizations) && summary && (
+        <section className="minimal-section">
+          <div className="minimal-grid-row">
+            <div className="minimal-left-col">
+              <span className="minimal-section-tag">About</span>
             </div>
-          ))
-        )}
-      </section>
+            <div className="minimal-right-col">
+              <p className="minimal-text">{summary}</p>
+            </div>
+          </div>
+        </section>
+      )}
 
-      {/* Skills */}
+      {/* Base: Experience with narrow left date column */}
+      {isSectionVisible('experience', customizations) && experience?.length > 0 && (
+        <section className="minimal-section">
+          <div className="minimal-grid-row">
+            <div className="minimal-left-col">
+              <span className="minimal-section-tag">Experience</span>
+            </div>
+            <div className="minimal-right-col">
+              {experience.map((exp, idx) => {
+                const bullets = exp.generatedBullets ||
+                  (exp.achievements
+                    ? exp.achievements.split('\n').filter((b) => b.trim().length > 0)
+                    : [`Engineered scalable architectures at ${exp.company || 'Enterprise'}.`]);
+
+                return (
+                  <div key={exp.id || idx} className="minimal-entry">
+                    <div className="minimal-entry-top">
+                      <span className="minimal-role">{exp.role}</span>
+                      <span className="minimal-date">{exp.duration}</span>
+                    </div>
+                    <div className="minimal-company">{exp.company} {exp.location && `— ${exp.location}`}</div>
+                    <ul className="minimal-bullets">
+                      {bullets.map((b, bIdx) => (
+                        <li key={bIdx}>{b.replace(/^[•\-\*]\s*/, '')}</li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Base: Education */}
+      {isSectionVisible('education', customizations) && education?.length > 0 && (
+        <section className="minimal-section">
+          <div className="minimal-grid-row">
+            <div className="minimal-left-col">
+              <span className="minimal-section-tag">Education</span>
+            </div>
+            <div className="minimal-right-col">
+              {education.map((edu, idx) => (
+                <div key={edu.id || idx} className="minimal-entry">
+                  <div className="minimal-entry-top">
+                    <span className="minimal-role">{edu.degree}</span>
+                    <span className="minimal-date">{edu.year}</span>
+                  </div>
+                  <div className="minimal-company">{edu.school} {edu.location && `— ${edu.location}`}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Minimal Extra: Selected Projects */}
+      {isSectionVisible('projects', customizations) && projects?.length > 0 && (
+        <section className="minimal-section">
+          <div className="minimal-grid-row">
+            <div className="minimal-left-col">
+              <span className="minimal-section-tag">Projects</span>
+            </div>
+            <div className="minimal-right-col">
+              {projects.map((proj, idx) => (
+                <div key={proj.id || idx} className="minimal-entry">
+                  <div className="minimal-entry-top">
+                    <span className="minimal-role">{proj.title}</span>
+                    <span className="minimal-date">{proj.duration || ''}</span>
+                  </div>
+                  <p className="minimal-text">{proj.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Base: Skills */}
+      {isSectionVisible('skills', customizations) && skills?.length > 0 && (
+        <section className="minimal-section">
+          <div className="minimal-grid-row">
+            <div className="minimal-left-col">
+              <span className="minimal-section-tag">Skills</span>
+            </div>
+            <div className="minimal-right-col">
+              <p className="minimal-text minimal-skills-line">{skills.join('  •  ')}</p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Minimal Extra: Awards & Achievements */}
+      {((isSectionVisible('awards', customizations) && awards?.length > 0) ||
+        (isSectionVisible('achievements', customizations) && achievements?.length > 0)) && (
+        <section className="minimal-section">
+          <div className="minimal-grid-row">
+            <div className="minimal-left-col">
+              <span className="minimal-section-tag">Awards</span>
+            </div>
+            <div className="minimal-right-col">
+              <div className="minimal-inline-list">
+                {awards?.map((aw, idx) => (
+                  <span key={`aw-${idx}`}>
+                    {aw.title} ({aw.year})
+                  </span>
+                ))}
+                {achievements?.map((ach, idx) => (
+                  <span key={`ach-${idx}`}>
+                    {ach.title} ({ach.year})
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Minimal Extra: Languages & Certifications */}
       <section className="minimal-section">
-        <h2 className="minimal-heading">Skills</h2>
-        <p className="minimal-skills-text">
-          {skills.length > 0
-            ? skills.join('  /  ')
-            : 'JavaScript  /  React  /  TypeScript  /  Node.js  /  System Architecture'}
-        </p>
+        <div className="minimal-grid-row">
+          <div className="minimal-left-col">
+            <span className="minimal-section-tag">Credentials</span>
+          </div>
+          <div className="minimal-right-col minimal-flex-cols">
+            {isSectionVisible('certifications', customizations) && certifications?.length > 0 && (
+              <div>
+                <strong>Certifications:</strong>{' '}
+                {certifications.map((c) => `${c.name} (${c.year})`).join(', ')}
+              </div>
+            )}
+            {isSectionVisible('languages', customizations) && languages?.length > 0 && (
+              <div>
+                <strong>Languages:</strong>{' '}
+                {languages.map((l) => `${l.language} (${l.proficiency})`).join(', ')}
+              </div>
+            )}
+          </div>
+        </div>
       </section>
-    </div>
+    </ResumeCanvasWrapper>
   );
 };

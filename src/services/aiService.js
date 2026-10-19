@@ -117,7 +117,13 @@ export const checkAtsContent = async (resumeData, jobDescription = '') => {
     }
   });
 
+  if (allBullets.length === 0 && answers.rawText) {
+    const rawLines = answers.rawText.split('\n').map((l) => l.trim()).filter((l) => l.length > 25);
+    allBullets = rawLines.slice(0, 10);
+  }
+
   const fullResumeText = [
+    answers.rawText || '',
     answers.fullName || '',
     answers.targetJobTitle || '',
     summary,
@@ -139,7 +145,10 @@ export const checkAtsContent = async (resumeData, jobDescription = '') => {
   if (allBullets.length > 0) {
     const strongRatio = strongBulletCount / allBullets.length;
     const weakPenalty = (weakBulletCount / allBullets.length) * 30;
-    actionVerbsScore = Math.min(100, Math.max(20, Math.round((strongRatio * 100) - weakPenalty + 20)));
+    actionVerbsScore = Math.min(100, Math.max(25, Math.round((strongRatio * 100) - weakPenalty + 25)));
+  } else if (answers.rawText) {
+    const strongInRaw = (answers.rawText.match(strongVerbsPattern) || []).length;
+    actionVerbsScore = Math.min(95, Math.max(50, 60 + strongInRaw * 8));
   }
 
   const bulletStrength = actionVerbsScore >= 80 ? 'Strong' : actionVerbsScore >= 60 ? 'Moderate' : 'Needs Improvement';
@@ -158,10 +167,14 @@ export const checkAtsContent = async (resumeData, jobDescription = '') => {
     } else {
       quantifiableMetricsScore = Math.max(20, Math.round(metricRatio * 150));
     }
+  } else if (answers.rawText) {
+    const metricsInRaw = (answers.rawText.match(metricPattern) || []).length;
+    quantifiableMetricsScore = Math.min(95, Math.max(45, 55 + metricsInRaw * 10));
   }
 
   let matchedKeywords = [];
   let missingKeywords = [];
+  let targetKeywords = [];
   let keywordMatchScore = 85;
 
   if (jobDescription && jobDescription.trim().length > 20) {
@@ -170,12 +183,12 @@ export const checkAtsContent = async (resumeData, jobDescription = '') => {
     );
     const dynamicKeywords = Array.from(
       new Set(
-        (jobDescription.match(/\b[A-Z][a-zA-Z0-9\+#\.]+\b/g) || [])
+        (jobDescription.match(/\\b[A-Z][a-zA-Z0-9\\+#\\.]+\\b/g) || [])
           .filter((w) => w.length > 2 && !['The', 'You', 'We', 'Our', 'This', 'With', 'And', 'For', 'Are', 'Will'].includes(w))
       )
     ).slice(0, 10);
 
-    const targetKeywords = Array.from(new Set([...jdKeywords, ...dynamicKeywords]));
+    targetKeywords = Array.from(new Set([...jdKeywords, ...dynamicKeywords]));
     targetKeywords.forEach((kw) => {
       if (fullResumeText.includes(kw.toLowerCase())) matchedKeywords.push(kw);
       else missingKeywords.push(kw);
@@ -184,11 +197,13 @@ export const checkAtsContent = async (resumeData, jobDescription = '') => {
     const matchRatio = targetKeywords.length > 0 ? matchedKeywords.length / targetKeywords.length : 0.8;
     keywordMatchScore = Math.min(100, Math.max(20, Math.round(matchRatio * 100)));
   } else {
+    targetKeywords = COMMON_INDUSTRY_KEYWORDS.slice(0, 10);
     matchedKeywords = COMMON_INDUSTRY_KEYWORDS.filter((kw) => fullResumeText.includes(kw.toLowerCase())).slice(0, 8);
     missingKeywords = COMMON_INDUSTRY_KEYWORDS.filter((kw) => !fullResumeText.includes(kw.toLowerCase())).slice(0, 5);
   }
 
   return {
+    targetKeywords,
     missingKeywords,
     matchedKeywords,
     bulletStrength,

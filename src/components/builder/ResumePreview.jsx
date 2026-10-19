@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TemplatePicker } from '../templates/TemplatePicker';
+import { ResumeCustomizerToolbar } from './ResumeCustomizerToolbar';
 import {
   ClassicTemplate,
   ModernTemplate,
@@ -19,13 +20,17 @@ import { useFeedback } from '../../context/FeedbackContext';
 
 export const ResumePreview = ({
   answers,
+  setAnswers,
   generatedContent,
   selectedTemplate = 'classic',
   onSelectTemplate,
-  onOpenGallery
+  onOpenGallery,
+  customizations,
+  setCustomizations
 }) => {
   const [isExporting, setIsExporting] = useState(false);
   const [activeFormat, setActiveFormat] = useState('pdf');
+  const [zoomLevel, setZoomLevel] = useState(0.85); // Default fit zoom for A4 in split view
   const { triggerFeedback } = useFeedback();
 
   const handleExport = async (format) => {
@@ -46,6 +51,12 @@ export const ResumePreview = ({
     }
   };
 
+  const templateProps = {
+    answers,
+    generatedContent,
+    customizations: customizations || {}
+  };
+
   return (
     <div className="resume-preview-wrapper">
       {/* Template Picker & Download Action Bar */}
@@ -58,62 +69,55 @@ export const ResumePreview = ({
         onOpenGallery={onOpenGallery}
       />
 
-      {/* Render Selected Template */}
-      <div className="resume-sheet-viewport">
-        {selectedTemplate === 'classic' && (
-          <ClassicTemplate answers={answers} generatedContent={generatedContent} />
-        )}
-        {selectedTemplate === 'ats-pro' && (
-          <AtsProTemplate answers={answers} generatedContent={generatedContent} />
-        )}
-        {selectedTemplate === 'ats-simple' && (
-          <AtsSimpleTemplate answers={answers} generatedContent={generatedContent} />
-        )}
-        {selectedTemplate === 'ats-compact' && (
-          <AtsCompactTemplate answers={answers} generatedContent={generatedContent} />
-        )}
-        {selectedTemplate === 'modern' && (
-          <ModernTemplate answers={answers} generatedContent={generatedContent} />
-        )}
-        {selectedTemplate === 'minimal' && (
-          <MinimalTemplate answers={answers} generatedContent={generatedContent} />
-        )}
-        {selectedTemplate === 'techstack' && (
-          <TechStackTemplate answers={answers} generatedContent={generatedContent} />
-        )}
-        {selectedTemplate === 'corporate' && (
-          <CorporateTemplate answers={answers} generatedContent={generatedContent} />
-        )}
-        {selectedTemplate === 'sidebar-pro' && (
-          <SidebarProTemplate answers={answers} generatedContent={generatedContent} />
-        )}
-        {selectedTemplate === 'timeline' && (
-          <TimelineTemplate answers={answers} generatedContent={generatedContent} />
-        )}
-        {selectedTemplate === 'academic' && (
-          <AcademicTemplate answers={answers} generatedContent={generatedContent} />
-        )}
-        {selectedTemplate === 'creative' && (
-          <CreativeTemplate answers={answers} generatedContent={generatedContent} />
-        )}
+      {/* Resume Customization Options Toolbar (Font Style, Font Size, Theme Color, Layout, Spacing, Photo, Skip Sections) */}
+      <ResumeCustomizerToolbar
+        customizations={customizations}
+        setCustomizations={setCustomizations}
+        answers={answers}
+        setAnswers={setAnswers}
+        zoomLevel={zoomLevel}
+        setZoomLevel={setZoomLevel}
+      />
 
-        {/* Fallback to Classic if template id is unrecognized */}
-        {![
-          'classic',
-          'ats-pro',
-          'ats-simple',
-          'ats-compact',
-          'modern',
-          'minimal',
-          'techstack',
-          'corporate',
-          'sidebar-pro',
-          'timeline',
-          'academic',
-          'creative'
-        ].includes(selectedTemplate) && (
-          <ClassicTemplate answers={answers} generatedContent={generatedContent} />
-        )}
+      {/* Render Selected Template within Scaled A4 Viewport */}
+      <div className="resume-sheet-viewport">
+        <div
+          className="resume-sheet-zoom-container"
+          style={{
+            transform: `scale(${zoomLevel})`,
+            transformOrigin: 'top center',
+            transition: 'transform 0.15s ease'
+          }}
+        >
+          {selectedTemplate === 'classic' && <ClassicTemplate {...templateProps} />}
+          {selectedTemplate === 'ats-pro' && <AtsProTemplate {...templateProps} />}
+          {selectedTemplate === 'ats-simple' && <AtsSimpleTemplate {...templateProps} />}
+          {selectedTemplate === 'ats-compact' && <AtsCompactTemplate {...templateProps} />}
+          {selectedTemplate === 'modern' && <ModernTemplate {...templateProps} />}
+          {selectedTemplate === 'minimal' && <MinimalTemplate {...templateProps} />}
+          {selectedTemplate === 'techstack' && <TechStackTemplate {...templateProps} />}
+          {selectedTemplate === 'corporate' && <CorporateTemplate {...templateProps} />}
+          {selectedTemplate === 'sidebar-pro' && <SidebarProTemplate {...templateProps} />}
+          {selectedTemplate === 'timeline' && <TimelineTemplate {...templateProps} />}
+          {selectedTemplate === 'academic' && <AcademicTemplate {...templateProps} />}
+          {selectedTemplate === 'creative' && <CreativeTemplate {...templateProps} />}
+
+          {/* Fallback to Classic if template id is unrecognized */}
+          {![
+            'classic',
+            'ats-pro',
+            'ats-simple',
+            'ats-compact',
+            'modern',
+            'minimal',
+            'techstack',
+            'corporate',
+            'sidebar-pro',
+            'timeline',
+            'academic',
+            'creative'
+          ].includes(selectedTemplate) && <ClassicTemplate {...templateProps} />}
+        </div>
       </div>
     </div>
   );
