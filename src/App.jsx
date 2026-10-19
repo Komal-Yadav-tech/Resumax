@@ -11,6 +11,8 @@ import { Builder } from './pages/Builder';
 import { AtsChecker } from './pages/AtsChecker';
 import { CareerAdvisor } from './pages/CareerAdvisor';
 import { FeedbackModal } from './components/feedback/FeedbackModal';
+import { ScrollProgressBar, ScrollToTop } from './components/common/ScrollControls';
+import { useScrollAnimation } from './hooks/useScrollAnimation';
 import { Sparkles, ArrowRight, X } from 'lucide-react';
 
 export const App = () => {
@@ -19,6 +21,9 @@ export const App = () => {
   const [currentPage, setCurrentPage] = useState('welcome');
   const [isTemplateGalleryOpen, setIsTemplateGalleryOpen] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
+
+  // Initialize smooth scroll reveal observer for all pages
+  useScrollAnimation(currentPage);
 
   // Sync body class when Template Selection full-screen view is active
   useEffect(() => {
@@ -161,6 +166,9 @@ export const App = () => {
 
   return (
     <div className="app-container">
+      {/* Scroll Progress Bar at Top */}
+      <ScrollProgressBar />
+
       {/* Top Announcement Banner */}
       {showAnnouncementBanner && (
         <div className="site-announcement-banner">
@@ -215,6 +223,9 @@ export const App = () => {
 
       {/* Session Review / Feedback Modal */}
       <FeedbackModal />
+
+      {/* Floating Scroll to Top Button */}
+      <ScrollToTop />
     </div>
   );
 };
