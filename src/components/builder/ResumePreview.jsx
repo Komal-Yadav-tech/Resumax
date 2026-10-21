@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TemplatePicker } from '../templates/TemplatePicker';
 import { ResumeCustomizerToolbar } from './ResumeCustomizerToolbar';
+import { ExportQualityModal } from './ExportQualityModal';
 import {
   ClassicTemplate,
   ModernTemplate,
@@ -17,6 +18,7 @@ import {
 } from '../templates';
 import { exportResume } from '../../services/exportService';
 import { useFeedback } from '../../context/FeedbackContext';
+import { AlertTriangle, Sparkles, FileText, CheckCircle2 } from 'lucide-react';
 
 export const ResumePreview = ({
   answers,
@@ -31,30 +33,39 @@ export const ResumePreview = ({
   const [isExporting, setIsExporting] = useState(false);
   const [activeFormat, setActiveFormat] = useState('pdf');
   const [zoomLevel, setZoomLevel] = useState(0.85); // Default fit zoom for A4 in split view
+  const [isQualityModalOpen, setIsQualityModalOpen] = useState(false);
+  const [overflowState, setOverflowState] = useState({
+    isOverflowing: false,
+    overflowPx: 0,
+    pageCount: 1,
+    pageHeightPx: 1122.5
+  });
+
   const { triggerFeedback } = useFeedback();
 
-  const handleExport = async (format) => {
-    try {
-      setIsExporting(true);
-      setActiveFormat(format);
-      await exportResume(format, {
-        elementId: 'resume-export-target',
-        answers,
-        generatedContent,
-        onFeedbackTrigger: triggerFeedback
-      });
-    } catch (error) {
-      console.error(`Failed to export ${format.toUpperCase()}:`, error);
-      alert(`Unable to generate ${format.toUpperCase()} export. Please try again.`);
-    } finally {
-      setIsExporting(false);
+  const handleExport = (format) => {
+    setActiveFormat(format);
+    setIsQualityModalOpen(true);
+  };
+
+  const handleApplyOverflowFix = (fixType) => {
+    if (!setCustomizations) return;
+    if (fixType === 'spacing') {
+      setCustomizations((prev) => ({ ...prev, spacing: 'Compact' }));
+    } else if (fixType === 'margin') {
+      setCustomizations((prev) => ({ ...prev, pageMargin: 'Narrow' }));
+    } else if (fixType === 'font') {
+      setCustomizations((prev) => ({ ...prev, fontSize: 'Small' }));
     }
   };
 
   const templateProps = {
     answers,
     generatedContent,
-    customizations: customizations || {}
+    customizations: {
+      ...(customizations || {}),
+      onOverflowStatusChange: setOverflowState
+    }
   };
 
   return (
@@ -69,7 +80,7 @@ export const ResumePreview = ({
         onOpenGallery={onOpenGallery}
       />
 
-      {/* Resume Customization Options Toolbar (Font Style, Font Size, Theme Color, Layout, Spacing, Photo, Skip Sections) */}
+      {/* Resume Customization Options Toolbar (Design Studio) */}
       <ResumeCustomizerToolbar
         customizations={customizations}
         setCustomizations={setCustomizations}
@@ -79,7 +90,51 @@ export const ResumePreview = ({
         setZoomLevel={setZoomLevel}
       />
 
-      {/* Render Selected Template within Scaled A4 Viewport */}
+      {/* SMART PAGE MANAGEMENT: Overflow Resolution Banner */}
+      {overflowState.isOverflowing && (
+        <div className="overflow-alert-banner">
+          <div className="overflow-info-group">
+            <div className="overflow-icon-badge">
+              <AlertTriangle size={13} />
+            </div>
+            <div>
+              <strong>Page Overflow Detected (+{Math.round(overflowState.overflowPx)}px)</strong>
+              <span style={{ marginLeft: '0.4rem', opacity: 0.9 }}>
+                Spilling onto Page {overflowState.pageCount || 2}. Quick 1-click fixes:
+              </span>
+            </div>
+          </div>
+
+          <div className="overflow-actions-group">
+            <button
+              type="button"
+              className="overflow-action-btn"
+              onClick={() => handleApplyOverflowFix('spacing')}
+              title="Change section spacing to Compact"
+            >
+              Compact Spacing
+            </button>
+            <button
+              type="button"
+              className="overflow-action-btn"
+              onClick={() => handleApplyOverflowFix('margin')}
+              title="Reduce page margins to Narrow (8mm)"
+            >
+              Narrow Margins
+            </button>
+            <button
+              type="button"
+              className="overflow-action-btn"
+              onClick={() => handleApplyOverflowFix('font')}
+              title="Reduce font scale slightly"
+            >
+              Small Font
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Render Selected Template within Scaled Viewport */}
       <div className="resume-sheet-viewport">
         <div
           className="resume-sheet-zoom-container"
@@ -119,6 +174,18 @@ export const ResumePreview = ({
           ].includes(selectedTemplate) && <ClassicTemplate {...templateProps} />}
         </div>
       </div>
+
+      {/* Phase 7 Pre-Export Quality Inspection Modal */}
+      <ExportQualityModal
+        isOpen={isQualityModalOpen}
+        onClose={() => setIsQualityModalOpen(false)}
+        answers={answers}
+        generatedContent={generatedContent}
+        customizations={customizations}
+        selectedTemplate={selectedTemplate}
+        overflowState={overflowState}
+        onFeedbackTrigger={triggerFeedback}
+      />
     </div>
   );
 };

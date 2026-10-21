@@ -323,7 +323,8 @@ export const normalizeResumeData = (answers = {}, generatedContent = null) => {
     devCertifications: answers.devCertifications || DEFAULT_EXTRAS.devCertifications,
     leadership: answers.leadership || DEFAULT_EXTRAS.leadership,
     milestones: answers.milestones || DEFAULT_EXTRAS.milestones,
-    stats: answers.stats || DEFAULT_EXTRAS.stats
+    stats: answers.stats || DEFAULT_EXTRAS.stats,
+    customSections: answers.customSections || []
   };
 };
 

@@ -273,6 +273,30 @@ export const buildResumeDocxDocument = (answers = {}, generatedContent = null) =
     );
   }
 
+  // Custom Sections
+  if (answers.customSections && answers.customSections.length > 0) {
+    answers.customSections.forEach((sec) => {
+      if (sec.name) {
+        children.push(createSectionHeader(sec.name));
+        if (sec.content) {
+          children.push(
+            new Paragraph({
+              spacing: { before: 60, after: 120 },
+              children: [
+                new TextRun({
+                  text: sec.content,
+                  size: 21,
+                  color: '334155',
+                  font: 'Calibri'
+                })
+              ]
+            })
+          );
+        }
+      }
+    });
+  }
+
   return new Document({
     sections: [
       {

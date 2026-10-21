@@ -79,6 +79,14 @@ Keep these out unless the user explicitly reintroduces them:
 - [x] **Phase 6 — Connect Real AI**: Node.js & Express server (`server/server.js`), Google Gemini API (`server/geminiService.js`), backend API key isolation (`test_ai_phase6.js`).
 - [x] **Phase 7 — Deployment & Production Readiness**: `README.md`, `vercel.json`, `.env.example`, clean Vite production build, master test runner (`test_all_phases.js`).
 - [x] **Feature Enhancements — Multi-Format Export & Feedback Popup**: DOCX/TXT/PDF dropdown selector, 5-star session feedback modal, `POST /api/feedback` (`test_export_feedback.js`).
+- [x] **Comprehensive Upgrades (Phases 1 to 7)**:
+  - **Phase 1 — Design Studio**: Custom HEX palette generator + presets, font family/size/weight, heading & divider styles, line & section spacing, margins, icon styles, 1-click reset to defaults (`ResumeCustomizerToolbar.jsx`, `themeConstants.js`).
+  - **Phase 2 & 3 — Live Preview & Smart Page Management**: Instant preview update, A4 (297mm) and US Letter (279.4mm) sizes, real-time overflow tracking with 1-click resolution banner, visual page-break preview line, no automatic unreadable font-shrinking (`ResumeCanvasWrapper.jsx`, `ResumePreview.jsx`).
+  - **Phase 4 — Resume Content & Multi-Resume Manager**: Drag-and-drop section reordering, custom sections, multi-resume management (create, duplicate, rename, delete, versioning), template switching with data preservation (`resumeStorageService.js`, `Dashboard.jsx`, `Builder.jsx`).
+  - **Phase 5 — ATS Checker**: Multi-category compliance audit (contact details, headings, template safety, readability, dates & chronology, links), simulated plain text extraction viewer, actionable fixes, and prominent disclaimer (`atsService.js`, `AtsChecker.jsx`).
+  - **Phase 6 — AI Assistant**: Professional summary generator (3 styles), bullet optimizer (Google XYZ formula), grammar & active voice polish, keyword suggestion engine, template recommender, and strict user approval diff workflow (`AiAssistantModal.jsx`).
+  - **Phase 7 — Export & Quality**: Pre-download Quality Inspection modal (`ExportQualityModal.jsx`), selectable text PDF with clickable links, DOCX export supporting custom sections (`docxService.js`, `pdfService.js`).
+  - All verified with unit tests (`test_all_upgrades.js`, `test_all_phases.js`) and clean Vite production build.
 
 ## 6. Related Documentation & Core Files
 

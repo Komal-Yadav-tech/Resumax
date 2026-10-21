@@ -20,10 +20,14 @@ export const exportResumeToPdf = async (elementOrId, fileName = 'Resume.pdf') =>
     throw new Error('Resume element not found for PDF export.');
   }
 
+  const isLetter = element.getAttribute('data-page-size') === 'letter';
+  const pageFormat = isLetter ? 'letter' : 'a4';
+
   const opt = {
     margin: 0,
     filename: fileName,
     image: { type: 'jpeg', quality: 0.98 },
+    enableLinks: true,
     html2canvas: {
       scale: 2,
       useCORS: true,
@@ -32,7 +36,7 @@ export const exportResumeToPdf = async (elementOrId, fileName = 'Resume.pdf') =>
     },
     jsPDF: {
       unit: 'mm',
-      format: 'a4',
+      format: pageFormat,
       orientation: 'portrait'
     },
     pagebreak: {

@@ -1,149 +1,135 @@
-import React, { useRef, useLayoutEffect, useState } from 'react';
+import React, { useRef, useLayoutEffect, useState, useEffect } from 'react';
+import {
+  FONT_FAMILY_MAP,
+  THEME_COLOR_MAP,
+  generatePaletteFromHex,
+  resolveThemePalette
+} from './themeConstants.js';
 
-/**
- * Maps user-selected font style to real CSS font-family strings
- */
-export const FONT_FAMILY_MAP = {
-  'Inter': "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  'Arial': "Arial, Helvetica, sans-serif",
-  'Calibri': "Calibri, Candara, Segoe, 'Segoe UI', Optima, sans-serif",
-  'Times New Roman': "'Times New Roman', Times, Georgia, serif",
-  'Georgia': "Georgia, 'Times New Roman', serif",
-  'Roboto': "'Roboto', 'Segoe UI', sans-serif",
-  'Outfit': "'Outfit', 'Inter', sans-serif",
-  'JetBrains Mono': "'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace"
+export {
+  FONT_FAMILY_MAP,
+  THEME_COLOR_MAP,
+  generatePaletteFromHex,
+  resolveThemePalette
 };
 
 /**
- * Maps theme colors to primary & secondary palettes
- */
-export const THEME_COLOR_MAP = {
-  blue: {
-    primary: '#2563EB',
-    primaryDark: '#1D4ED8',
-    primaryLight: '#EFF6FF',
-    accent: '#3B82F6',
-    border: '#BFDBFE'
-  },
-  black: {
-    primary: '#0F172A',
-    primaryDark: '#020617',
-    primaryLight: '#F8FAFC',
-    accent: '#334155',
-    border: '#CBD5E1'
-  },
-  green: {
-    primary: '#059669',
-    primaryDark: '#047857',
-    primaryLight: '#ECFDF5',
-    accent: '#10B981',
-    border: '#A7F3D0'
-  },
-  purple: {
-    primary: '#7C3AED',
-    primaryDark: '#6D28D9',
-    primaryLight: '#F5F3FF',
-    accent: '#8B5CF6',
-    border: '#DDD6FE'
-  },
-  teal: {
-    primary: '#0D9488',
-    primaryDark: '#0F766E',
-    primaryLight: '#F0FDFA',
-    accent: '#14B8A6',
-    border: '#99F6E4'
-  },
-  navy: {
-    primary: '#1E3A8A',
-    primaryDark: '#172554',
-    primaryLight: '#EFF6FF',
-    accent: '#2563EB',
-    border: '#93C5FD'
-  }
-};
-
-/**
- * ResumeCanvasWrapper enforces strict A4 dimensions (210mm x 297mm)
- * and continuously monitors content overflow.
- * If content overflows 297mm, it auto-shrinks font size down to 9pt and compresses
- * vertical spacing to guarantee it stays strictly on 1 single page.
+ * ResumeCanvasWrapper supports A4 & US Letter sizes, custom styles,
+ * section spacing, heading styles, and real-time page overflow tracking.
  */
 export const ResumeCanvasWrapper = ({
   children,
   templateId = 'classic',
   customizations = {},
   className = '',
-  id = 'resume-export-target'
+  id = 'resume-export-target',
+  onOverflowStatusChange = null
 }) => {
   const containerRef = useRef(null);
-  const [scaleInfo, setScaleInfo] = useState({ fontScale: 1, spacingScale: 1, isAutoFitted: false });
+  const [overflowState, setOverflowState] = useState({
+    isOverflowing: false,
+    overflowPx: 0,
+    pageCount: 1,
+    pageHeightPx: 1122.5
+  });
 
   const fontStyle = customizations.fontStyle || 'default';
   const fontSizeSetting = customizations.fontSize || 'Medium'; // Small, Medium, Large
+  const fontWeightSetting = customizations.fontWeight || 'Normal'; // Normal, Medium, Semi-Bold, Bold
+  const headingWeightSetting = customizations.headingWeight || 'Bold'; // Normal, Semi-Bold, Bold, Extra-Bold
   const themeColorKey = customizations.themeColor || 'blue';
+  const customHexColor = customizations.customHexColor || '';
   const spacingSetting = customizations.spacing || 'Normal'; // Compact, Normal, Spacious
   const layoutSetting = customizations.layout || 'default'; // default, single, two-column
+  const pageSize = customizations.pageSize || 'a4'; // a4, letter
+  const pageMarginSetting = customizations.pageMargin || 'Normal'; // Narrow, Normal, Wide
+  const lineHeightSetting = customizations.lineHeight || 'Normal'; // Tight, Normal, Relaxed
+  const headingStyleSetting = customizations.headingStyle || 'standard'; // standard, uppercase, underline, left-accent, highlight-badge
+  const dividerStyleSetting = customizations.dividerStyle || 'solid'; // solid, dashed, dotted, gradient, double, none
+  const headerAlignSetting = customizations.headerAlign || 'center'; // left, center, right
+  const showIconsSetting = customizations.showIcons !== false; // true / false
+  const iconStyleSetting = customizations.iconStyle || 'subtle'; // subtle, badge, minimal
 
-  // Calculate base font multiplier from user setting
+  // Calculate base multipliers
   const baseSizeMultiplier =
     fontSizeSetting === 'Small' ? 0.92 : fontSizeSetting === 'Large' ? 1.08 : 1.0;
 
-  // Calculate base padding & spacing from user setting
+  // Margin calculation (mm)
   const paddingMm =
-    spacingSetting === 'Compact' ? 12 : spacingSetting === 'Spacious' ? 18 : 14;
+    pageMarginSetting === 'Narrow' ? 9 : pageMarginSetting === 'Wide' ? 19 : 14;
 
+  // Spacing multiplier for internal gaps
   const spacingMultiplier =
-    spacingSetting === 'Compact' ? 0.85 : spacingSetting === 'Spacious' ? 1.15 : 1.0;
+    spacingSetting === 'Compact' ? 0.8 : spacingSetting === 'Spacious' ? 1.2 : 1.0;
 
-  const colorPalette = THEME_COLOR_MAP[themeColorKey] || THEME_COLOR_MAP.blue;
+  // Line height
+  const lineHeightValue =
+    lineHeightSetting === 'Tight' ? '1.25' : lineHeightSetting === 'Relaxed' ? '1.65' : '1.45';
 
-  // Auto-shrink overflow observer to strictly lock to 1 page
+  // Section gap
+  const sectionGapValue =
+    spacingSetting === 'Compact' ? '10px' : spacingSetting === 'Spacious' ? '22px' : '16px';
+
+  // Headings & body weights
+  const bodyWeightValue =
+    fontWeightSetting === 'Bold' ? 700 : fontWeightSetting === 'Semi-Bold' ? 600 : fontWeightSetting === 'Medium' ? 500 : 400;
+
+  const headingWeightValue =
+    headingWeightSetting === 'Normal' ? 500 : headingWeightSetting === 'Semi-Bold' ? 600 : headingWeightSetting === 'Extra-Bold' ? 800 : 700;
+
+  // Color palette
+  const colorPalette = resolveThemePalette(themeColorKey, customHexColor);
+
+  // Monitor overflow & page boundaries
   useLayoutEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    // Reset scales to measure natural height
-    el.style.setProperty('--auto-font-scale', '1');
-    el.style.setProperty('--auto-spacing-scale', '1');
-
-    const evaluateFit = () => {
-      // 297mm in pixels at 96 DPI is ~1122.5px
-      const clientH = el.clientHeight || 1122;
+    const evaluateOverflow = () => {
+      // 96 DPI: A4 is 297mm (~1122.5px), US Letter is 11in (~1056px)
+      const targetPageHeight = pageSize === 'letter' ? 1056 : 1122.5;
       const scrollH = el.scrollHeight;
+      const clientH = el.clientHeight || targetPageHeight;
 
-      if (scrollH > clientH + 2) {
-        // Overflow detected! Calculate precision shrink ratio
-        const ratio = clientH / scrollH;
-        // Limit font shrink to 9pt equivalent (~0.72 of standard 12pt)
-        const computedFontScale = Math.max(0.72, Math.min(1.0, ratio * 0.98));
-        // Compress gap spacing slightly more to preserve font legibility
-        const computedSpacingScale = Math.max(0.65, Math.min(1.0, ratio * 0.94));
+      const isOverflowing = scrollH > targetPageHeight + 6;
+      const overflowPx = Math.max(0, scrollH - targetPageHeight);
+      const calculatedPages = Math.max(1, Math.ceil(scrollH / (targetPageHeight - 20)));
 
-        el.style.setProperty('--auto-font-scale', computedFontScale.toFixed(3));
-        el.style.setProperty('--auto-spacing-scale', computedSpacingScale.toFixed(3));
-        setScaleInfo({
-          fontScale: computedFontScale,
-          spacingScale: computedSpacingScale,
-          isAutoFitted: true
-        });
-      } else {
-        el.style.setProperty('--auto-font-scale', '1');
-        el.style.setProperty('--auto-spacing-scale', '1');
-        setScaleInfo({ fontScale: 1, spacingScale: 1, isAutoFitted: false });
+      const newState = {
+        isOverflowing,
+        overflowPx,
+        pageCount: calculatedPages,
+        pageHeightPx: targetPageHeight
+      };
+
+      setOverflowState(newState);
+      const notifyCallback = onOverflowStatusChange || customizations?.onOverflowStatusChange;
+      if (notifyCallback) {
+        notifyCallback(newState);
       }
     };
 
-    // Evaluate on render
-    evaluateFit();
+    evaluateOverflow();
 
-    // Re-evaluate on DOM mutations or child resize
-    const ro = new ResizeObserver(() => evaluateFit());
+    const ro = new ResizeObserver(() => evaluateOverflow());
     ro.observe(el);
 
     return () => ro.disconnect();
-  }, [children, fontSizeSetting, spacingSetting, fontStyle, themeColorKey, layoutSetting]);
+  }, [
+    children,
+    fontSizeSetting,
+    spacingSetting,
+    fontStyle,
+    themeColorKey,
+    customHexColor,
+    layoutSetting,
+    pageSize,
+    pageMarginSetting,
+    lineHeightSetting,
+    headingStyleSetting,
+    dividerStyleSetting
+  ]);
 
-  // Compute inline CSS variables for this canvas
   const fontFamilyValue =
     fontStyle !== 'default' && FONT_FAMILY_MAP[fontStyle]
       ? FONT_FAMILY_MAP[fontStyle]
@@ -158,18 +144,44 @@ export const ResumeCanvasWrapper = ({
     '--theme-accent': colorPalette.accent,
     '--theme-border': colorPalette.border,
     '--user-base-font-scale': baseSizeMultiplier,
-    '--user-spacing-scale': spacingMultiplier
+    '--user-spacing-scale': spacingMultiplier,
+    '--user-line-height': lineHeightValue,
+    '--user-section-gap': sectionGapValue,
+    '--user-body-weight': bodyWeightValue,
+    '--user-heading-weight': headingWeightValue,
+    '--user-header-align': headerAlignSetting,
+    lineHeight: lineHeightValue
   };
+
+  const pageSizeClass = pageSize === 'letter' ? 'size-letter' : 'size-a4';
 
   return (
     <div
       ref={containerRef}
       id={id}
-      className={`resume-paper a4-fixed-canvas template-${templateId} layout-${layoutSetting} spacing-${spacingSetting.toLowerCase()} ${className}`}
+      className={`resume-paper ${pageSizeClass}-canvas template-${templateId} layout-${layoutSetting} spacing-${spacingSetting.toLowerCase()} heading-style-${headingStyleSetting} divider-style-${dividerStyleSetting} header-align-${headerAlignSetting} icon-style-${iconStyleSetting} ${!showIconsSetting ? 'icons-hidden' : ''} ${className}`}
       style={customStyle}
-      data-auto-fitted={scaleInfo.isAutoFitted ? 'true' : 'false'}
+      data-page-size={pageSize}
+      data-overflowing={overflowState.isOverflowing ? 'true' : 'false'}
     >
-      <div className="a4-inner-content-area">{children}</div>
+      <div className="a4-inner-content-area">
+        {children}
+
+        {/* Visual Page Break Preview Indicator if content spans beyond Page 1 */}
+        {overflowState.isOverflowing && (
+          <div
+            className="page-break-indicator-line"
+            style={{
+              top: `${overflowState.pageHeightPx}px`
+            }}
+            title="Page 1 Break Line (Content below this point moves to Page 2)"
+          >
+            <span className="page-break-badge">
+              ─── Page 1 Break • Page 2 Begins ───
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

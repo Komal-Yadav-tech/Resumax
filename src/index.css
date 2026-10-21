@@ -10120,3 +10120,499 @@ input:checked + .slider:before {
     transition: none !important;
   }
 }
+
+/* ==========================================================================
+   RESUMAX DESIGN STUDIO & SMART PAGE MANAGEMENT STYLES
+   ========================================================================== */
+
+/* Page Sizes (A4 vs US Letter) */
+.size-a4-canvas {
+  width: 210mm !important;
+  min-height: 297mm !important;
+}
+
+.size-letter-canvas {
+  width: 215.9mm !important;
+  min-height: 279.4mm !important;
+}
+
+/* Page Break Indicator Line */
+.page-break-indicator-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-top: 2px dashed #EF4444;
+  z-index: 20;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-break-badge {
+  background: #EF4444;
+  color: #FFFFFF;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+  transform: translateY(-50%);
+}
+
+@media print {
+  .page-break-indicator-line {
+    display: none !important;
+  }
+}
+
+/* Dynamic Line Height & Section Gap */
+.resume-paper {
+  line-height: var(--user-line-height, 1.45) !important;
+}
+
+.resume-paper section,
+.resume-paper .classic-section,
+.resume-paper .modern-section,
+.resume-paper .minimal-section {
+  margin-bottom: var(--user-section-gap, 16px) !important;
+}
+
+.resume-paper h1,
+.resume-paper h2,
+.resume-paper h3,
+.resume-paper .classic-heading,
+.resume-paper .modern-section-title,
+.resume-paper .minimal-heading {
+  font-weight: var(--user-heading-weight, 700) !important;
+}
+
+.resume-paper p,
+.resume-paper li,
+.resume-paper span,
+.resume-paper .classic-text {
+  font-weight: var(--user-body-weight, 400);
+}
+
+/* Heading Styles */
+.heading-style-uppercase h2,
+.heading-style-uppercase .classic-heading,
+.heading-style-uppercase .modern-section-title,
+.heading-style-uppercase .minimal-heading,
+.heading-style-uppercase .section-title {
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+}
+
+.heading-style-underline h2,
+.heading-style-underline .classic-heading,
+.heading-style-underline .modern-section-title,
+.heading-style-underline .minimal-heading {
+  border-bottom: 2px solid var(--theme-primary, #2563EB) !important;
+  padding-bottom: 4px !important;
+}
+
+.heading-style-left-accent h2,
+.heading-style-left-accent .classic-heading,
+.heading-style-left-accent .modern-section-title,
+.heading-style-left-accent .minimal-heading {
+  border-left: 4px solid var(--theme-primary, #2563EB) !important;
+  padding-left: 8px !important;
+}
+
+.heading-style-highlight-badge h2,
+.heading-style-highlight-badge .classic-heading,
+.heading-style-highlight-badge .modern-section-title {
+  background: var(--theme-primary-light, #EFF6FF) !important;
+  color: var(--theme-primary-dark, #1D4ED8) !important;
+  padding: 3px 10px !important;
+  border-radius: 4px !important;
+  display: inline-block !important;
+}
+
+/* Divider Styles */
+.divider-style-dashed hr,
+.divider-style-dashed .classic-heading,
+.divider-style-dashed .section-divider {
+  border-bottom-style: dashed !important;
+}
+
+.divider-style-dotted hr,
+.divider-style-dotted .classic-heading,
+.divider-style-dotted .section-divider {
+  border-bottom-style: dotted !important;
+}
+
+.divider-style-gradient hr,
+.divider-style-gradient .classic-heading,
+.divider-style-gradient .section-divider {
+  border-bottom: none !important;
+  border-image: linear-gradient(90deg, var(--theme-primary, #2563EB), transparent) 1 !important;
+  border-bottom-width: 2px !important;
+  border-bottom-style: solid !important;
+}
+
+.divider-style-double hr,
+.divider-style-double .classic-heading,
+.divider-style-double .section-divider {
+  border-bottom-style: double !important;
+  border-bottom-width: 3px !important;
+}
+
+.divider-style-none hr,
+.divider-style-none .classic-heading,
+.divider-style-none .section-divider {
+  border-bottom: none !important;
+}
+
+/* Header Alignment */
+.header-align-left .classic-header,
+.header-align-left .modern-header,
+.header-align-left .minimal-header,
+.header-align-left .resume-header {
+  text-align: left !important;
+  align-items: flex-start !important;
+}
+
+.header-align-left .classic-contact,
+.header-align-left .modern-contact-bar,
+.header-align-left .minimal-contact {
+  justify-content: flex-start !important;
+}
+
+.header-align-center .classic-header,
+.header-align-center .modern-header,
+.header-align-center .minimal-header,
+.header-align-center .resume-header {
+  text-align: center !important;
+  align-items: center !important;
+}
+
+.header-align-center .classic-contact,
+.header-align-center .modern-contact-bar,
+.header-align-center .minimal-contact {
+  justify-content: center !important;
+}
+
+.header-align-right .classic-header,
+.header-align-right .modern-header,
+.header-align-right .minimal-header,
+.header-align-right .resume-header {
+  text-align: right !important;
+  align-items: flex-end !important;
+}
+
+.header-align-right .classic-contact,
+.header-align-right .modern-contact-bar,
+.header-align-right .minimal-contact {
+  justify-content: flex-end !important;
+}
+
+/* Icon Visibility & Styles */
+.icons-hidden svg,
+.icons-hidden .contact-icon,
+.icons-hidden .resume-icon {
+  display: none !important;
+}
+
+.icon-style-badge .contact-icon,
+.icon-style-badge .resume-icon {
+  background: var(--theme-primary-light, #EFF6FF);
+  color: var(--theme-primary, #2563EB);
+  padding: 3px;
+  border-radius: 50%;
+}
+
+.icon-style-minimal .contact-icon,
+.icon-style-minimal .resume-icon {
+  opacity: 0.65;
+}
+
+/* ==========================================================================
+   SMART OVERFLOW RESOLUTION BAR
+   ========================================================================== */
+.overflow-alert-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: #FFFBEB;
+  border: 1px solid #FCD34D;
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  color: #92400E;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.12);
+  animation: slideDown 0.25s ease-out;
+}
+
+[data-theme="dark"] .overflow-alert-banner {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.35);
+  color: #FDE68A;
+}
+
+.overflow-info-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.overflow-icon-badge {
+  background: #F59E0B;
+  color: #FFFFFF;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.overflow-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.overflow-action-btn {
+  background: #FFFFFF;
+  border: 1px solid #FCD34D;
+  color: #92400E;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.overflow-action-btn:hover {
+  background: #F59E0B;
+  color: #FFFFFF;
+  border-color: #F59E0B;
+}
+
+[data-theme="dark"] .overflow-action-btn {
+  background: rgba(0, 0, 0, 0.3);
+  color: #FDE68A;
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+[data-theme="dark"] .overflow-action-btn:hover {
+  background: #F59E0B;
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   DESIGN STUDIO TABS & CONTROLS ENHANCEMENTS
+   ========================================================================== */
+.customizer-drawer {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-top: 0.75rem;
+  box-shadow: var(--shadow-md);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.customizer-subnav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+.customizer-subnav-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.825rem;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.customizer-subnav-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.customizer-subnav-btn.active {
+  color: var(--accent);
+  background: var(--accent-light);
+}
+
+.customizer-color-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.custom-hex-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.2rem 0.4rem;
+}
+
+.custom-hex-picker {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border: none;
+  cursor: pointer;
+  background: none;
+  border-radius: 4px;
+}
+
+.custom-hex-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.custom-hex-picker::-webkit-color-swatch {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.custom-hex-text-input {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-family: monospace;
+  width: 65px;
+  outline: none;
+}
+
+/* ==========================================================================
+   RESUME MANAGER & DROPDOWN
+   ========================================================================== */
+.resume-switcher-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.resume-switcher-select {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.65rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  max-width: 200px;
+}
+
+/* ==========================================================================
+   AI ASSISTANT & QUALITY INSPECTOR MODALS
+   ========================================================================== */
+.ai-diff-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+@media (max-width: 768px) {
+  .ai-diff-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ai-diff-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ai-diff-box.original {
+  opacity: 0.85;
+}
+
+.ai-diff-badge {
+  font-size: 0.725rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  width: fit-content;
+}
+
+.ai-diff-badge.before {
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+}
+
+.ai-diff-badge.after {
+  background: #ECFDF5;
+  color: #059669;
+}
+
+[data-theme="dark"] .ai-diff-badge.after {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34D399;
+}
+
+/* Draggable Sections List */
+.drag-section-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.4rem;
+  transition: all 0.15s ease;
+}
+
+.drag-section-item:hover {
+  border-color: var(--border-focus);
+}
+
+.drag-section-item.dragging {
+  opacity: 0.5;
+  background: var(--bg-hover);
+}
+
+.drag-handle {
+  cursor: grab;
+  color: var(--text-tertiary);
+  margin-right: 0.5rem;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+

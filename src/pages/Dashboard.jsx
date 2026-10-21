@@ -12,14 +12,69 @@ import {
   Bot,
   Layers,
   Award,
-  TrendingUp
+  TrendingUp,
+  Copy,
+  Edit3,
+  Trash2,
+  Calendar,
+  ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logoImg from '../assets/logo.png';
+import {
+  getAllResumes,
+  setActiveResumeId,
+  createNewResume,
+  duplicateResume,
+  renameResume,
+  deleteResume
+} from '../services/resumeStorageService';
+import { TEMPLATES } from '../components/templates/templateConstants';
 
 export const Dashboard = ({ onNavigate }) => {
   const { user } = useAuth();
   const userName = user?.displayName || user?.email?.split('@')[0] || 'Friend';
+  const [resumes, setResumes] = useState(() => getAllResumes());
+
+  const handleOpenResume = (id) => {
+    setActiveResumeId(id);
+    onNavigate('builder');
+  };
+
+  const handleCreateNew = () => {
+    const title = window.prompt('Enter a title for your new resume:', 'New Resume');
+    if (title !== null) {
+      const created = createNewResume(title || 'New Resume', 'classic');
+      setResumes(getAllResumes());
+      handleOpenResume(created.id);
+    }
+  };
+
+  const handleDuplicate = (id) => {
+    const duplicated = duplicateResume(id);
+    if (duplicated) {
+      setResumes(getAllResumes());
+    }
+  };
+
+  const handleRename = (id, currentTitle) => {
+    const newTitle = window.prompt('Rename this resume:', currentTitle);
+    if (newTitle && newTitle.trim()) {
+      renameResume(id, newTitle.trim());
+      setResumes(getAllResumes());
+    }
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm('Are you sure you want to delete this resume?')) {
+      try {
+        const remaining = deleteResume(id);
+        setResumes(remaining);
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+  };
 
   return (
     <div className="dashboard-container">
@@ -299,36 +354,133 @@ export const Dashboard = ({ onNavigate }) => {
           <div>
             <h2>My Resumes</h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-              Manage, edit, and download your ATS-ready resume drafts.
+              Manage, edit, duplicate, and download your customized resumes.
             </p>
           </div>
           <button
             type="button"
             className="btn btn-primary"
-            onClick={() => onNavigate('builder')}
+            onClick={handleCreateNew}
           >
             <Plus size={16} />
             <span>New Resume</span>
           </button>
         </div>
 
-        <div className="resumes-empty-card">
-          <div className="empty-icon-circle">
-            <FileText size={32} />
+        {resumes.length > 0 ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+            {resumes.map((resume) => {
+              const tmplObj = TEMPLATES.find((t) => t.id === resume.templateId) || TEMPLATES[0];
+              const dateStr = resume.updatedAt ? new Date(resume.updatedAt).toLocaleDateString() : 'Recently';
+
+              return (
+                <div
+                  key={resume.id}
+                  style={{
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '1.25rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    boxShadow: 'var(--shadow-sm)',
+                    transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+                  }}
+                  className="resume-card"
+                >
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                      <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                        {resume.title}
+                      </h3>
+                      <span
+                        style={{
+                          fontSize: '0.7rem',
+                          fontWeight: 700,
+                          padding: '2px 8px',
+                          borderRadius: 'var(--radius-sm)',
+                          background: tmplObj.isAtsSafe ? 'var(--accent-light)' : 'var(--bg-hover)',
+                          color: tmplObj.isAtsSafe ? 'var(--accent)' : 'var(--text-secondary)',
+                          textTransform: 'uppercase'
+                        }}
+                      >
+                        {tmplObj.name} {tmplObj.isAtsSafe ? '✓ ATS' : ''}
+                      </span>
+                    </div>
+
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
+                      {resume.answers?.targetJobTitle || 'Professional Role'} • v{resume.version || 1}
+                    </p>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: 'var(--text-tertiary)', marginBottom: '1rem' }}>
+                      <Calendar size={13} />
+                      <span>Updated {dateStr}</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: '0.75rem' }}>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-xs"
+                      onClick={() => handleOpenResume(resume.id)}
+                    >
+                      <Edit3 size={13} />
+                      <span>Edit Resume</span>
+                    </button>
+
+                    <div style={{ display: 'flex', gap: '0.4rem' }}>
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-xs"
+                        onClick={() => handleDuplicate(resume.id)}
+                        title="Duplicate resume"
+                      >
+                        <Copy size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-xs"
+                        onClick={() => handleRename(resume.id, resume.title)}
+                        title="Rename resume"
+                      >
+                        <Edit3 size={13} />
+                      </button>
+                      {resumes.length > 1 && (
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-xs"
+                          onClick={() => handleDelete(resume.id)}
+                          title="Delete resume"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <h3>No resumes created yet</h3>
-          <p>
-            Start your first ATS-optimized resume in under 5 minutes with our step-by-step AI assistant.
-          </p>
-          <button
-            type="button"
-            className="btn btn-secondary btn-lg"
-            onClick={() => onNavigate('builder')}
-          >
-            <img src={logoImg} alt="AI" style={{ width: 16, height: 16, borderRadius: 'var(--radius-sm)' }} />
-            <span>Start Building Now</span>
-          </button>
-        </div>
+        ) : (
+          <div className="resumes-empty-card">
+            <div className="empty-icon-circle">
+              <FileText size={32} />
+            </div>
+            <h3>No resumes created yet</h3>
+            <p>
+              Start your first ATS-optimized resume in under 5 minutes with our step-by-step AI assistant.
+            </p>
+            <button
+              type="button"
+              className="btn btn-secondary btn-lg"
+              onClick={handleCreateNew}
+            >
+              <img src={logoImg} alt="AI" style={{ width: 16, height: 16, borderRadius: 'var(--radius-sm)' }} />
+              <span>Start Building Now</span>
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );

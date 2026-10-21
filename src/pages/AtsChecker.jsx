@@ -106,6 +106,7 @@ export const AtsChecker = ({ onNavigate }) => {
   const [jobDescription, setJobDescription] = useState(SAMPLE_JOB_DESCRIPTION);
   const [evaluation, setEvaluation] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showTextExtractionModal, setShowTextExtractionModal] = useState(false);
 
   // Currently active resume object based on user selection
   const currentResume = activeSource === 'uploaded' && uploadedResume ? uploadedResume : resumaxData;
@@ -639,13 +640,149 @@ export const AtsChecker = ({ onNavigate }) => {
 
         {/* Right Column: ScoreCard & Suggestions */}
         <div className="ats-results-col reveal-right stagger-2">
+          {/* Prominent ATS Disclaimer */}
+          <div style={{ padding: '0.75rem 1rem', background: 'var(--bg-primary)', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', marginBottom: '1rem', fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+            🛡️ <strong>ATS Accuracy & Ethics Notice:</strong> Applicant Tracking Systems vary widely by software vendor (Workday, Taleo, Greenhouse, iCIMS). A high score ensures optimal machine parseability and keyword relevance, but does not guarantee an interview or job offer. Resumax never invents or exaggerates qualifications.
+          </div>
+
           {evaluation ? (
             <>
               <ScoreCard evaluation={evaluation} />
+
+              {/* Comprehensive Category Compliance Audit */}
+              {evaluation.detailedCompliance && (
+                <div className="ats-panel-card" style={{ marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <ShieldCheck size={18} color="var(--accent)" />
+                      <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>ATS Compliance Category Audit</h3>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-outline btn-xs"
+                      onClick={() => setShowTextExtractionModal(true)}
+                    >
+                      <FileCode size={13} />
+                      <span>View Parsed Plain Text</span>
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.6rem' }}>
+                    <div style={{ padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-sm)', background: 'var(--bg-primary)', border: '1px solid var(--border)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>Contact Info</span>
+                        {evaluation.detailedCompliance.contactStatus.passed ? (
+                          <CheckCircle2 size={14} color="var(--success)" />
+                        ) : (
+                          <AlertCircle size={14} color="var(--danger)" />
+                        )}
+                      </div>
+                      <span style={{ fontSize: '0.72rem', color: evaluation.detailedCompliance.contactStatus.passed ? 'var(--success)' : 'var(--danger)' }}>
+                        {evaluation.detailedCompliance.contactStatus.passed ? 'Full contact details verified' : `${evaluation.detailedCompliance.contactStatus.issues.length} issue(s) detected`}
+                      </span>
+                    </div>
+
+                    <div style={{ padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-sm)', background: 'var(--bg-primary)', border: '1px solid var(--border)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>Standard Headings</span>
+                        {evaluation.detailedCompliance.headingStatus.passed ? (
+                          <CheckCircle2 size={14} color="var(--success)" />
+                        ) : (
+                          <AlertCircle size={14} color="var(--warning)" />
+                        )}
+                      </div>
+                      <span style={{ fontSize: '0.72rem', color: evaluation.detailedCompliance.headingStatus.passed ? 'var(--success)' : 'var(--warning)' }}>
+                        {evaluation.detailedCompliance.headingStatus.passed ? 'ATS standard section headers' : `${evaluation.detailedCompliance.headingStatus.issues.length} missing header(s)`}
+                      </span>
+                    </div>
+
+                    <div style={{ padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-sm)', background: 'var(--bg-primary)', border: '1px solid var(--border)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>Dates & Chronology</span>
+                        {evaluation.detailedCompliance.dateStatus.passed ? (
+                          <CheckCircle2 size={14} color="var(--success)" />
+                        ) : (
+                          <AlertCircle size={14} color="var(--warning)" />
+                        )}
+                      </div>
+                      <span style={{ fontSize: '0.72rem', color: evaluation.detailedCompliance.dateStatus.passed ? 'var(--success)' : 'var(--warning)' }}>
+                        {evaluation.detailedCompliance.dateStatus.passed ? 'Consistent duration formats' : `${evaluation.detailedCompliance.dateStatus.issues.length} date issue(s)`}
+                      </span>
+                    </div>
+
+                    <div style={{ padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-sm)', background: 'var(--bg-primary)', border: '1px solid var(--border)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>Links & URLs</span>
+                        {evaluation.detailedCompliance.linkStatus.passed ? (
+                          <CheckCircle2 size={14} color="var(--success)" />
+                        ) : (
+                          <AlertCircle size={14} color="var(--warning)" />
+                        )}
+                      </div>
+                      <span style={{ fontSize: '0.72rem', color: evaluation.detailedCompliance.linkStatus.passed ? 'var(--success)' : 'var(--warning)' }}>
+                        {evaluation.detailedCompliance.linkStatus.passed ? 'Clean web links' : 'Invalid URL syntax'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <SuggestionsList
                 suggestions={evaluation.suggestions}
                 aiBreakdown={evaluation.aiBreakdown}
               />
+
+              {/* Text Extraction Simulation Modal */}
+              {showTextExtractionModal && (
+                <div className="feedback-modal-overlay" style={{ zIndex: 1200 }}>
+                  <div className="feedback-modal-card" style={{ maxWidth: 640 }}>
+                    <div className="feedback-modal-header">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <FileCode size={20} color="var(--accent)" />
+                        <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Simulated ATS Text Extraction</h3>
+                      </div>
+                      <button
+                        type="button"
+                        className="feedback-close-btn"
+                        onClick={() => setShowTextExtractionModal(false)}
+                      >
+                        <Trash2 size={16} style={{ display: 'none' }} />
+                        <span>✕</span>
+                      </button>
+                    </div>
+
+                    <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '0.5rem 0 1rem 0' }}>
+                      This preview displays how automated Applicant Tracking Systems (e.g. Taleo, Workday, Greenhouse) extract and read your text once visual CSS styling and graphics are stripped away:
+                    </p>
+
+                    <pre style={{
+                      background: 'var(--bg-primary)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 'var(--radius-sm)',
+                      padding: '1rem',
+                      maxHeight: '350px',
+                      overflowY: 'auto',
+                      fontSize: '0.78rem',
+                      fontFamily: 'monospace',
+                      whiteSpace: 'pre-wrap',
+                      color: 'var(--text-primary)',
+                      lineHeight: 1.45
+                    }}>
+                      {evaluation.detailedCompliance?.plainTextExtraction || 'No text extracted.'}
+                    </pre>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={() => setShowTextExtractionModal(false)}
+                      >
+                        Done
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             <div className="loading-score-card">

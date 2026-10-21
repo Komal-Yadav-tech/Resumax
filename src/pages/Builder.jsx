@@ -1,74 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Save, Eye, Edit3, Sparkles, Check, ShieldCheck } from 'lucide-react';
+import {
+  ArrowLeft,
+  Save,
+  Eye,
+  Edit3,
+  Sparkles,
+  Check,
+  ShieldCheck,
+  Plus,
+  Copy,
+  FolderOpen
+} from 'lucide-react';
 import { StepIndicator } from '../components/builder/StepIndicator';
 import { QAStepForm } from '../components/builder/QAStepForm';
 import { ResumePreview } from '../components/builder/ResumePreview';
+import { AiAssistantModal } from '../components/builder/AiAssistantModal';
 import { generateResumeContent } from '../services/aiService';
 
 import { DEFAULT_EXTRAS, BASE_SECTIONS } from '../components/templates/templateData';
 import { TemplateGalleryModal } from '../components/templates/TemplateGalleryModal';
-
-const DEFAULT_ANSWERS = {
-  fullName: 'Alex Morgan',
-  contact: {
-    email: 'alex.morgan@example.com',
-    phone: '+1 (555) 234-5678',
-    location: 'San Francisco, CA',
-    website: 'linkedin.com/in/alexmorgan',
-    github: 'github.com/alexmorgan',
-    portfolio: 'alexmorgan.dev'
-  },
-  photo: '',
-  targetJobTitle: 'Senior Frontend Engineer',
-  experienceLevel: 'Senior-Level',
-  summary: DEFAULT_EXTRAS.summary,
-  experience: [
-    {
-      id: 1,
-      company: 'TechFlow Solutions',
-      role: 'Senior Software Engineer',
-      duration: '2022 – Present',
-      location: 'San Francisco, CA',
-      achievements:
-        'Led team of 5 engineers in rebuilding customer web portal with React and Next.js\nReduced bundle size by 40% and improved Core Web Vitals to 98/100\nImplemented reusable component design system adopted across 4 product suites'
-    },
-    {
-      id: 2,
-      company: 'Apex Digital Systems',
-      role: 'Frontend Developer',
-      duration: '2020 – 2022',
-      location: 'Austin, TX',
-      achievements:
-        'Developed interactive dashboards and analytics charts using React and TypeScript\nCollaborated with UI/UX team to implement responsive design patterns'
-    }
-  ],
-  education: [
-    {
-      id: 1,
-      school: 'University of California, Berkeley',
-      degree: 'B.S. in Computer Science',
-      year: '2016 – 2020',
-      location: 'Berkeley, CA'
-    }
-  ],
-  skills: [
-    'React.js',
-    'TypeScript',
-    'JavaScript (ES6+)',
-    'Next.js',
-    'HTML5 / CSS3',
-    'Tailwind CSS',
-    'REST APIs',
-    'Git & GitHub',
-    'Agile / Scrum',
-    'Performance Optimization'
-  ],
-  projects: DEFAULT_EXTRAS.projects,
-  certifications: DEFAULT_EXTRAS.certifications,
-  achievements: DEFAULT_EXTRAS.achievements,
-  languages: DEFAULT_EXTRAS.languages,
-  ...DEFAULT_EXTRAS
-};
+import {
+  getAllResumes,
+  getActiveResume,
+  getActiveResumeId,
+  setActiveResumeId,
+  updateResume,
+  createNewResume,
+  duplicateResume,
+  renameResume,
+  DEFAULT_RESUME_ANSWERS,
+  DEFAULT_DESIGN_CUSTOMIZATIONS
+} from '../services/resumeStorageService';
 
 export const Builder = ({
   onNavigate,
@@ -79,61 +41,93 @@ export const Builder = ({
   const isTemplateGalleryOpen = propIsGalleryOpen !== undefined ? propIsGalleryOpen : internalIsGalleryOpen;
   const setIsTemplateGalleryOpen = propSetIsGalleryOpen || setInternalIsGalleryOpen;
 
-  const [answers, setAnswers] = useState(() => {
-    const saved = localStorage.getItem('resumax_builder_draft');
-    if (!saved) return DEFAULT_ANSWERS;
-    try {
-      const parsed = JSON.parse(saved);
-      return { ...DEFAULT_ANSWERS, ...parsed };
-    } catch {
-      return DEFAULT_ANSWERS;
-    }
-  });
+  // Multi-Resume Management State
+  const [resumesList, setResumesList] = useState(() => getAllResumes());
+  const [activeResumeIdState, setActiveResumeIdState] = useState(() => getActiveResumeId());
 
-  const [customizations, setCustomizations] = useState(() => {
-    const saved = localStorage.getItem('resumax_builder_customizations');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        // fallback
-      }
-    }
-    return {
-      fontStyle: 'Inter',
-      fontSize: 'Medium',
-      themeColor: 'blue',
-      layout: 'default',
-      spacing: 'Normal',
-      showPhoto: false,
-      photoUrl: '',
-      hiddenSections: {},
-      sectionOrder: BASE_SECTIONS.map((s) => s.id)
-    };
-  });
+  // Active Resume Object
+  const currentResume = resumesList.find((r) => r.id === activeResumeIdState) || resumesList[0] || {
+    id: 'resume_default_1',
+    title: 'My Master Resume',
+    templateId: 'classic',
+    answers: DEFAULT_RESUME_ANSWERS,
+    customizations: DEFAULT_DESIGN_CUSTOMIZATIONS
+  };
 
-  // Auto-save customizations
-  useEffect(() => {
-    localStorage.setItem('resumax_builder_customizations', JSON.stringify(customizations));
-  }, [customizations]);
+  const [answers, setAnswers] = useState(() => currentResume.answers || DEFAULT_RESUME_ANSWERS);
+  const [customizations, setCustomizations] = useState(() => currentResume.customizations || DEFAULT_DESIGN_CUSTOMIZATIONS);
+  const [selectedTemplate, setSelectedTemplate] = useState(() => currentResume.templateId || 'classic');
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedTemplate, setSelectedTemplate] = useState(() => {
-    return localStorage.getItem('resumax_selected_template') || 'classic';
-  });
   const [generatedContent, setGeneratedContent] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
   const [activeMobileTab, setActiveMobileTab] = useState('form'); // 'form' | 'preview'
   const [saveStatus, setSaveStatus] = useState('');
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
-  // Auto-save draft and selected template to localStorage
+  // When active resume changes, reload its answers, customizations, and template
+  const handleSwitchResume = (newResumeId) => {
+    setActiveResumeId(newResumeId);
+    setActiveResumeIdState(newResumeId);
+    const target = resumesList.find((r) => r.id === newResumeId);
+    if (target) {
+      setAnswers(target.answers || DEFAULT_RESUME_ANSWERS);
+      setCustomizations(target.customizations || DEFAULT_DESIGN_CUSTOMIZATIONS);
+      setSelectedTemplate(target.templateId || 'classic');
+    }
+  };
+
+  // Create new resume
+  const handleCreateNewResume = () => {
+    const title = window.prompt('Enter a title for your new resume:', 'New Resume');
+    if (title !== null) {
+      const created = createNewResume(title || 'New Resume', selectedTemplate);
+      const updatedList = getAllResumes();
+      setResumesList(updatedList);
+      handleSwitchResume(created.id);
+    }
+  };
+
+  // Duplicate active resume
+  const handleDuplicateActiveResume = () => {
+    const duplicated = duplicateResume(activeResumeIdState);
+    if (duplicated) {
+      const updatedList = getAllResumes();
+      setResumesList(updatedList);
+      handleSwitchResume(duplicated.id);
+      setSaveStatus('Duplicated!');
+      setTimeout(() => setSaveStatus(''), 2000);
+    }
+  };
+
+  // Rename active resume
+  const handleRenameActiveResume = () => {
+    const newTitle = window.prompt('Rename this resume:', currentResume.title);
+    if (newTitle && newTitle.trim()) {
+      renameResume(activeResumeIdState, newTitle.trim());
+      setResumesList(getAllResumes());
+      setSaveStatus('Renamed!');
+      setTimeout(() => setSaveStatus(''), 2000);
+    }
+  };
+
+  // Auto-sync answers & customizations with resumeStorageService & legacy localStorage keys
   useEffect(() => {
+    updateResume(activeResumeIdState, {
+      answers,
+      customizations,
+      templateId: selectedTemplate
+    });
+    // Legacy support for tests and other components
     localStorage.setItem('resumax_builder_draft', JSON.stringify(answers));
-  }, [answers]);
+    localStorage.setItem('resumax_builder_customizations', JSON.stringify(customizations));
+    localStorage.setItem('resumax_selected_template', selectedTemplate);
+  }, [answers, customizations, selectedTemplate, activeResumeIdState]);
 
   const handleSelectTemplate = (tmplId) => {
     setSelectedTemplate(tmplId);
+    updateResume(activeResumeIdState, { templateId: tmplId });
     localStorage.setItem('resumax_selected_template', tmplId);
   };
 
@@ -159,13 +153,18 @@ export const Builder = ({
   };
 
   const handleManualSave = () => {
+    updateResume(activeResumeIdState, {
+      answers,
+      customizations,
+      templateId: selectedTemplate
+    });
     localStorage.setItem('resumax_builder_draft', JSON.stringify(answers));
     localStorage.setItem('resumax_selected_template', selectedTemplate);
     setSaveStatus('Saved!');
     setTimeout(() => setSaveStatus(''), 2000);
   };
 
-  // Distinct full-screen Template Selection view: removes StepIndicator, builder-topbar, and navbar
+  // Distinct full-screen Template Selection view
   if (isTemplateGalleryOpen) {
     return (
       <TemplateGalleryModal
@@ -185,13 +184,62 @@ export const Builder = ({
     <div className="builder-page-container">
       {/* Builder Top Bar */}
       <div className="builder-topbar">
-        <button
-          type="button"
-          onClick={() => onNavigate('dashboard')}
-          className="btn btn-outline btn-sm"
-        >
-          <ArrowLeft size={16} /> Back to Dashboard
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => onNavigate('dashboard')}
+            className="btn btn-outline btn-sm"
+          >
+            <ArrowLeft size={16} /> Dashboard
+          </button>
+
+          {/* Resume Switcher Dropdown */}
+          <div className="resume-switcher-wrapper">
+            <select
+              className="resume-switcher-select"
+              value={activeResumeIdState}
+              onChange={(e) => handleSwitchResume(e.target.value)}
+              title="Switch active resume"
+            >
+              {resumesList.map((r) => (
+                <option key={r.id} value={r.id}>
+                  📄 {r.title} (v{r.version || 1})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Resume Management Quick Actions */}
+          <button
+            type="button"
+            className="btn btn-outline btn-xs"
+            onClick={handleCreateNewResume}
+            title="Create a new resume"
+          >
+            <Plus size={13} />
+            <span>New</span>
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-outline btn-xs"
+            onClick={handleDuplicateActiveResume}
+            title="Duplicate current resume"
+          >
+            <Copy size={13} />
+            <span>Duplicate</span>
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-outline btn-xs"
+            onClick={handleRenameActiveResume}
+            title="Rename current resume"
+          >
+            <Edit3 size={13} />
+            <span>Rename</span>
+          </button>
+        </div>
 
         <div className="builder-topbar-actions">
           {/* Mobile Tab Switcher */}
@@ -211,6 +259,18 @@ export const Builder = ({
               <Eye size={14} /> Preview
             </button>
           </div>
+
+          {/* Phase 6 AI Assistant Trigger */}
+          <button
+            type="button"
+            onClick={() => setIsAiModalOpen(true)}
+            className="btn btn-secondary btn-sm"
+            style={{ background: 'var(--accent-light)', color: 'var(--accent)', borderColor: 'var(--accent)' }}
+            title="Launch AI Resume Assistant"
+          >
+            <Sparkles size={14} />
+            <span>AI Assistant</span>
+          </button>
 
           <button
             type="button"
@@ -234,7 +294,7 @@ export const Builder = ({
         </div>
       </div>
 
-      {/* Stepper Progress Bar (only rendered on builder form flow) */}
+      {/* Stepper Progress Bar */}
       <StepIndicator currentStep={currentStep} onSelectStep={setCurrentStep} />
 
       {/* Main Split Layout */}
@@ -266,7 +326,18 @@ export const Builder = ({
           />
         </div>
       </div>
+
+      {/* Phase 6 AI Assistant Modal */}
+      <AiAssistantModal
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+        answers={answers}
+        setAnswers={setAnswers}
+        selectedTemplate={selectedTemplate}
+        onSelectTemplate={handleSelectTemplate}
+        customizations={customizations}
+        setCustomizations={setCustomizations}
+      />
     </div>
   );
 };
-

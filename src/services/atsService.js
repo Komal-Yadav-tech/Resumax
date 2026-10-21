@@ -13,6 +13,186 @@ const WEAK_ACTION_PHRASES = [
   'participated in', 'handled', 'did', 'was involved in', 'duties included'
 ];
 
+export const ATS_DISCLAIMER =
+  '⚠️ ATS Disclaimer: Applicant Tracking Systems (ATS) algorithms vary by software vendor (Workday, Taleo, Greenhouse, iCIMS). A high score maximizes automated readability and keyword alignment, but does not guarantee job interviews or hiring decisions. Resumax never fabricates or invents candidate qualifications.';
+
+/**
+ * Simulates raw text extraction as parsed by standard enterprise ATS engines
+ * @param {Object} resumeData 
+ * @returns {string}
+ */
+export const simulateAtsTextExtraction = (resumeData = {}) => {
+  const answers = resumeData.answers || resumeData || {};
+  const contact = answers.contact || {};
+  const experience = answers.experience || [];
+  const education = answers.education || [];
+  const skills = answers.skills || [];
+
+  const lines = [];
+
+  // Header
+  lines.push('============================================================');
+  lines.push((answers.fullName || 'CANDIDATE NAME').toUpperCase());
+  if (answers.targetJobTitle) lines.push(answers.targetJobTitle.toUpperCase());
+  lines.push('============================================================');
+
+  // Contact
+  const contactParts = [contact.email, contact.phone, contact.location, contact.website, contact.github, contact.portfolio].filter(Boolean);
+  if (contactParts.length > 0) {
+    lines.push(contactParts.join(' | '));
+  }
+  lines.push('');
+
+  // Summary
+  if (answers.summary || resumeData.generatedContent?.summary) {
+    lines.push('PROFESSIONAL SUMMARY');
+    lines.push('--------------------');
+    lines.push(resumeData.generatedContent?.summary || answers.summary);
+    lines.push('');
+  }
+
+  // Experience
+  if (experience.length > 0) {
+    lines.push('WORK EXPERIENCE');
+    lines.push('---------------');
+    experience.forEach((exp) => {
+      lines.push(`${exp.role || 'Role'} | ${exp.company || 'Company'} | ${exp.duration || ''} | ${exp.location || ''}`);
+      const bullets = exp.generatedBullets || (exp.achievements ? exp.achievements.split('\n').filter(Boolean) : []);
+      bullets.forEach((b) => {
+        lines.push(`• ${b.replace(/^[•\-\*]\s*/, '')}`);
+      });
+      lines.push('');
+    });
+  }
+
+  // Education
+  if (education.length > 0) {
+    lines.push('EDUCATION');
+    lines.push('---------');
+    education.forEach((edu) => {
+      lines.push(`${edu.degree || 'Degree'} - ${edu.school || 'School'} (${edu.year || ''})`);
+    });
+    lines.push('');
+  }
+
+  // Skills
+  if (skills.length > 0) {
+    lines.push('SKILLS');
+    lines.push('------');
+    lines.push(skills.join(', '));
+    lines.push('');
+  }
+
+  return lines.join('\n');
+};
+
+/**
+ * Detailed ATS multi-category audit
+ */
+export const checkDetailedAtsCompliance = (resumeData = {}, selectedTemplate = 'classic') => {
+  const answers = resumeData.answers || resumeData || {};
+  const contact = answers.contact || {};
+  const experience = answers.experience || [];
+  const education = answers.education || [];
+  const skills = answers.skills || [];
+  const rawText = answers.rawText || '';
+
+  const issues = [];
+
+  // 1. Contact Details Check
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/;
+  const contactIssues = [];
+
+  if (!answers.fullName || answers.fullName.trim().length < 2) {
+    contactIssues.push('Full candidate name is missing or too short.');
+  }
+  if (!contact.email || (!emailRegex.test(contact.email.trim()) && !rawText.includes('@'))) {
+    contactIssues.push('Valid professional email address is missing.');
+  }
+  if (!contact.phone || (!phoneRegex.test(contact.phone) && !rawText.match(/\d{3}[-\s.]?\d{3}[-\s.]?\d{4}/))) {
+    contactIssues.push('Direct phone number is missing or poorly formatted.');
+  }
+  if (!contact.location && !rawText.match(/(remote|hybrid|[a-z]+,\s*[a-z]{2})/i)) {
+    contactIssues.push('City/State location is missing (used by recruiter geo-filters).');
+  }
+
+  // 2. Headings Check
+  const headingIssues = [];
+  if (!answers.summary && !resumeData.generatedContent?.summary && !rawText.match(/(summary|profile|about)/i)) {
+    headingIssues.push('Professional Summary section is missing.');
+  }
+  if (experience.length === 0 && !rawText.match(/(experience|employment|work history)/i)) {
+    headingIssues.push('Standard Work Experience section is missing.');
+  }
+  if (education.length === 0 && !rawText.match(/(education|degree|university)/i)) {
+    headingIssues.push('Education section is missing.');
+  }
+  if (skills.length < 3 && !rawText.match(/(skills|technologies)/i)) {
+    headingIssues.push('Skills section should contain at least 3-5 core competencies.');
+  }
+
+  // 3. Formatting & Parseability Check
+  const formattingIssues = [];
+  const ATS_SAFE_TEMPLATES = ['classic', 'ats-pro', 'ats-simple', 'ats-compact', 'academic'];
+  const isAtsSafeTmpl = ATS_SAFE_TEMPLATES.includes(selectedTemplate);
+
+  if (!isAtsSafeTmpl) {
+    formattingIssues.push(`Template "${selectedTemplate}" uses visual design blocks. For highest automated ATS score, choose an ATS-Safe template.`);
+  }
+
+  // 4. Dates & Chronology Check
+  const dateIssues = [];
+  const datePattern = /(\b20\d{2}\b|\b19\d{2}\b|present|current|\b\d{1,2}\/\d{2,4}\b)/i;
+  let missingExpDates = 0;
+  experience.forEach((exp) => {
+    if (!exp.duration || !datePattern.test(exp.duration)) {
+      missingExpDates++;
+    }
+  });
+  if (missingExpDates > 0) {
+    dateIssues.push(`${missingExpDates} position(s) are missing clear date ranges (e.g. 2021 – Present).`);
+  }
+
+  // 5. Links Check
+  const linkIssues = [];
+  const urlPattern = /(https?:\/\/|www\.|linkedin\.com|github\.com|[a-z0-9]+\.[a-z]{2,})/i;
+  const linksProvided = [contact.website, contact.github, contact.portfolio].filter(Boolean);
+  linksProvided.forEach((l) => {
+    if (!urlPattern.test(l)) {
+      linkIssues.push(`Link "${l}" does not appear to be a valid web URL.`);
+    }
+  });
+
+  // 6. Readability & Bullet Length
+  const readabilityIssues = [];
+  let totalBullets = 0;
+  let wordCount = 0;
+  experience.forEach((exp) => {
+    const bullets = exp.generatedBullets || (exp.achievements ? exp.achievements.split('\n').filter(Boolean) : []);
+    totalBullets += bullets.length;
+    bullets.forEach((b) => {
+      const words = b.split(/\s+/).length;
+      wordCount += words;
+      if (words > 50) {
+        readabilityIssues.push(`Bullet point is too lengthy (${words} words). Aim for 15-35 words per bullet for rapid recruiter scanning.`);
+      }
+    });
+  });
+
+  const plainText = simulateAtsTextExtraction(resumeData);
+
+  return {
+    contactStatus: { passed: contactIssues.length === 0, issues: contactIssues },
+    headingStatus: { passed: headingIssues.length === 0, issues: headingIssues },
+    formattingStatus: { passed: formattingIssues.length === 0, isAtsSafeTemplate: isAtsSafeTmpl, issues: formattingIssues },
+    dateStatus: { passed: dateIssues.length === 0, issues: dateIssues },
+    linkStatus: { passed: linkIssues.length === 0, issues: linkIssues },
+    readabilityStatus: { passed: readabilityIssues.length === 0, totalBullets, issues: readabilityIssues },
+    plainTextExtraction: plainText
+  };
+};
+
 /**
  * Calculates rule-based formatting score out of 100
  * @param {Object} resumeData 
@@ -117,7 +297,6 @@ export const calculateFormatScore = (resumeData = {}, selectedTemplate = 'classi
   }, 0);
 
   if (rawText && totalBullets < 2) {
-    // Count bullet-like lines in rawText
     const rawBulletMatches = rawText.match(/^[•\-\*]\s*.+/gm) || rawText.split('\n').filter((l) => l.trim().length > 30);
     totalBullets = rawBulletMatches ? rawBulletMatches.length : 3;
   }
@@ -141,7 +320,8 @@ export const calculateFormatScore = (resumeData = {}, selectedTemplate = 'classi
 };
 
 /**
- * Runs complete ATS strength evaluation combining rule formatting & AI content scoring
+ * Runs complete ATS strength evaluation combining rule formatting, AI content scoring,
+ * and comprehensive checks.
  * @param {Object} resumeData 
  * @param {string} jobDescription 
  * @param {string} selectedTemplate 
@@ -155,20 +335,23 @@ export const evaluateResumeAtsStrength = async (
   // 1. Calculate Rule-Based Formatting Score
   const formatResult = calculateFormatScore(resumeData, selectedTemplate);
 
-  // 2. Call AI Content Evaluation (with fallback/placeholder logic)
+  // 2. Call AI Content Evaluation
   const aiResult = await checkAtsContent(resumeData, jobDescription);
 
-  // 3. Calculate Content Score
+  // 3. Detailed category compliance check & plain text extraction
+  const detailedCompliance = checkDetailedAtsCompliance(resumeData, selectedTemplate);
+
+  // 4. Calculate Content Score
   const contentScore = Math.round(
     (aiResult.actionVerbsScore * 0.35) +
     (aiResult.quantifiableMetricsScore * 0.35) +
     (aiResult.keywordMatchScore * 0.30)
   );
 
-  // 4. Combine into Weighted Overall Percentage (40% Format + 60% Content)
+  // 5. Combine into Weighted Overall Percentage (40% Format + 60% Content)
   const overallScore = Math.round((formatResult.score * 0.40) + (contentScore * 0.60));
 
-  // 5. Consolidate and Categorize Actionable Fixes
+  // 6. Consolidate and Categorize Actionable Fixes
   const suggestions = [];
 
   // Add formatting feedback
@@ -221,6 +404,8 @@ export const evaluateResumeAtsStrength = async (
       matchedKeywords: aiResult.matchedKeywords || [],
       missingKeywords: aiResult.missingKeywords || []
     },
+    detailedCompliance,
+    disclaimer: ATS_DISCLAIMER,
     suggestions,
     evaluatedAt: new Date().toISOString()
   };
