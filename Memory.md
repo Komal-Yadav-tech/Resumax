@@ -94,12 +94,13 @@ Keep these out unless the user explicitly reintroduces them:
   - **Resume Document Protection**: Preserved all 12 resume templates (Classic, Modern, Minimal, etc.) and individual user customization without forcing site brand colors onto candidate export resumes.
   - All verified with `test_theme_redesign.js`, `test_all_phases.js`, `test_all_upgrades.js`, and `npm run build`.
 
-- [x] **Resumax Promotional Poster Integration (Homepage)**:
-  - **Poster Asset**: Exact user-supplied promotional poster asset copied to `public/assets/resumax-promotional-poster.jpg` and `src/assets/resumax-promotional-poster.jpg`.
-  - **Placement**: Rendered immediately below the existing navbar at the very top of `src/pages/Dashboard.jsx`, before the existing welcome/hero banner.
-  - **Preservation**: Existing navbar strictly untouched; existing hero section and all serial feature showcases preserved in original order.
-  - **Responsiveness**: Displayed as a responsive `<img>` element with `width: 100%`, `height: auto`, `object-fit: contain`, zero distortion, and no horizontal overflow across desktop and mobile.
-  - **Verification**: Verified with `test_promotional_poster.js`, `npm run build`, and browser testing.
+- [x] **Resumax Functional Hero UI (Recreated from Poster)**:
+  - **Main Heading**: "Create Professional Resumes with AI" in bold dark navy typography with "AI" highlighted in royal-blue-to-violet gradient.
+  - **Supporting Description**: "Build, customize, and optimize your resume with smart AI tools. Get ATS-friendly, modern templates and stand out from the crowd."
+  - **Four Feature Highlights**: Clean icons in tinted circular wrappers for AI Resume Builder (Sparkles), ATS Score Checker (ShieldCheck), Multiple Templates (Layers), and Easy Customization (Edit3).
+  - **Primary CTA Button**: "Build Your Resume Now →" with pill styling, gradient background, right arrow, and full functional connection to existing resume creation workflow (`onNavigate('builder')`).
+  - **Preservation**: Existing navbar untouched; hero section upgraded in-place without replacing structure; serial feature showcase sections and My Resumes preserved in order.
+  - **Verification**: Verified with `test_hero_poster_ui.js`, `test_all_phases.js`, `test_all_upgrades.js`, and `npm run build`.
 
 ## 6. Related Documentation & Core Files
 

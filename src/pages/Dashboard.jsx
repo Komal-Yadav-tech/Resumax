@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Sparkles,
   FileText,
@@ -13,92 +13,141 @@ import {
   Layers,
   Award,
   TrendingUp,
-  Copy,
-  Edit3,
-  Trash2,
-  Calendar,
-  ExternalLink
+  Edit3
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logoImg from '../assets/logo.png';
-import promotionalPosterImg from '../assets/resumax-promotional-poster.jpg';
-import {
-  getAllResumes,
-  setActiveResumeId,
-  createNewResume,
-  duplicateResume,
-  renameResume,
-  deleteResume
-} from '../services/resumeStorageService';
-import { TEMPLATES } from '../components/templates/templateConstants';
 
 export const Dashboard = ({ onNavigate }) => {
   const { user } = useAuth();
-  const userName = user?.displayName || user?.email?.split('@')[0] || 'Friend';
-  const [resumes, setResumes] = useState(() => getAllResumes());
-
-  const handleOpenResume = (id) => {
-    setActiveResumeId(id);
-    onNavigate('builder');
-  };
-
-  const handleCreateNew = () => {
-    const title = window.prompt('Enter a title for your new resume:', 'New Resume');
-    if (title !== null) {
-      const created = createNewResume(title || 'New Resume', 'classic');
-      setResumes(getAllResumes());
-      handleOpenResume(created.id);
-    }
-  };
-
-  const handleDuplicate = (id) => {
-    const duplicated = duplicateResume(id);
-    if (duplicated) {
-      setResumes(getAllResumes());
-    }
-  };
-
-  const handleRename = (id, currentTitle) => {
-    const newTitle = window.prompt('Rename this resume:', currentTitle);
-    if (newTitle && newTitle.trim()) {
-      renameResume(id, newTitle.trim());
-      setResumes(getAllResumes());
-    }
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this resume?')) {
-      try {
-        const remaining = deleteResume(id);
-        setResumes(remaining);
-      } catch (err) {
-        alert(err.message);
-      }
-    }
-  };
 
   return (
     <div className="dashboard-container">
-      {/* Attached Resumax Promotional Poster (Immediately Below Navbar) */}
-      <div className="promotional-poster-container" id="promotional-poster">
-        <img
-          src={promotionalPosterImg}
-          alt="Resumax - Maximize Your Resume. Maximize Your Opportunities. Create Professional Resumes with AI."
-          className="promotional-poster-img"
-        />
-      </div>
-
-      {/* 1. Hero / Welcome Banner */}
-      <section className="welcome-banner reveal-up">
-        <div className="welcome-badge">
-          <img src={logoImg} alt="AI" style={{ width: 14, height: 14, borderRadius: 'var(--radius-sm)' }} />
-          <span>Unlimited & 100% Free AI Career Toolkit</span>
+      {/* 1. Hero / Welcome Banner (Functional Hero UI Recreated from Poster) */}
+      <section className="welcome-banner reveal-up" id="hero-section">
+        {/* Brand Header & Tagline */}
+        <div className="hero-brand-header">
+          <div className="hero-brand-identity">
+            <div className="hero-brand-logo-wrapper">
+              <img src={logoImg} alt="Resumax Logo" className="hero-brand-logo" />
+            </div>
+            <div className="hero-brand-text-block">
+              <div className="hero-brand-title-row">
+                <span className="hero-brand-title">Resumax</span>
+                <span className="welcome-badge">
+                  <span>Free AI Toolkit</span>
+                </span>
+              </div>
+              <p className="hero-tagline">
+                Maximize Your <span className="text-blue">Resume</span>. Maximize Your <span className="text-violet">Opportunities</span>.
+              </p>
+            </div>
+          </div>
         </div>
-        <h1>Welcome back, {userName}! 👋</h1>
-        <p>
-          Ready to land your dream role? Explore our three powerful tools below to build an ATS-optimized
-          resume, audit keyword gaps, and practice interview questions with AI.
+
+        {/* Main Heading */}
+        <h1 className="hero-main-heading">
+          Create Professional Resumes<br />
+          with <span className="hero-ai-gradient">AI</span>
+        </h1>
+
+        {/* Supporting Description */}
+        <p className="hero-description">
+          Build, customize, and optimize your resume with smart AI tools. Get ATS-friendly, modern templates and stand out from the crowd.
         </p>
+
+        {/* Four Feature Highlights */}
+        <div className="hero-features-row">
+          <div className="hero-feature-item">
+            <div className="hero-feature-icon-circle icon-violet">
+              <Sparkles size={20} />
+            </div>
+            <div className="hero-feature-text">
+              <strong className="hero-feature-title">AI Resume Builder</strong>
+              <span className="hero-feature-subtext">Create in seconds with AI</span>
+            </div>
+          </div>
+
+          <div className="hero-feature-divider" />
+
+          <div className="hero-feature-item">
+            <div className="hero-feature-icon-circle icon-green">
+              <ShieldCheck size={20} />
+            </div>
+            <div className="hero-feature-text">
+              <strong className="hero-feature-title">ATS Score Checker</strong>
+              <span className="hero-feature-subtext">Improve your chances</span>
+            </div>
+          </div>
+
+          <div className="hero-feature-divider" />
+
+          <div className="hero-feature-item">
+            <div className="hero-feature-icon-circle icon-blue">
+              <Layers size={20} />
+            </div>
+            <div className="hero-feature-text">
+              <strong className="hero-feature-title">Multiple Templates</strong>
+              <span className="hero-feature-subtext">9+ professional styles</span>
+            </div>
+          </div>
+
+          <div className="hero-feature-divider" />
+
+          <div className="hero-feature-item">
+            <div className="hero-feature-icon-circle icon-purple">
+              <Edit3 size={20} />
+            </div>
+            <div className="hero-feature-text">
+              <strong className="hero-feature-title">Easy Customization</strong>
+              <span className="hero-feature-subtext">Make it your own</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Primary CTA Button */}
+        <div className="hero-cta-group">
+          <button
+            type="button"
+            className="hero-primary-cta-btn"
+            onClick={() => onNavigate('builder')}
+            id="hero-build-resume-btn"
+          >
+            <span>Build Your Resume Now</span>
+            <ArrowRight size={18} className="hero-cta-arrow" />
+          </button>
+        </div>
+
+        {/* Bottom Trust Highlights */}
+        <div className="hero-bottom-highlights">
+          <div className="hero-highlight-item">
+            <Zap size={16} className="highlight-icon text-blue" />
+            <div className="highlight-text">
+              <strong>Save Time</strong>
+              <span>No more manual work</span>
+            </div>
+          </div>
+
+          <div className="hero-highlight-separator" />
+
+          <div className="hero-highlight-item">
+            <Award size={16} className="highlight-icon text-blue" />
+            <div className="highlight-text">
+              <strong>Get Noticed</strong>
+              <span>Stand out to recruiters</span>
+            </div>
+          </div>
+
+          <div className="hero-highlight-separator" />
+
+          <div className="hero-highlight-item">
+            <TrendingUp size={16} className="highlight-icon text-violet" />
+            <div className="highlight-text">
+              <strong>Achieve Your Goals</strong>
+              <span>Your dream job is closer</span>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* 2. Serial Showcase Section 1: AI Resume Builder */}
@@ -358,140 +407,6 @@ export const Dashboard = ({ onNavigate }) => {
         </div>
       </section>
 
-      {/* 5. Resumes Section (At the Bottom) */}
-      <section className="resumes-bottom-section reveal-up" id="my-resumes">
-        <div className="section-header">
-          <div>
-            <h2>My Resumes</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-              Manage, edit, duplicate, and download your customized resumes.
-            </p>
-          </div>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={handleCreateNew}
-          >
-            <Plus size={16} />
-            <span>New Resume</span>
-          </button>
-        </div>
-
-        {resumes.length > 0 ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
-            {resumes.map((resume) => {
-              const tmplObj = TEMPLATES.find((t) => t.id === resume.templateId) || TEMPLATES[0];
-              const dateStr = resume.updatedAt ? new Date(resume.updatedAt).toLocaleDateString() : 'Recently';
-
-              return (
-                <div
-                  key={resume.id}
-                  style={{
-                    background: 'var(--bg-card)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '1.25rem',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    boxShadow: 'var(--shadow-sm)',
-                    transition: 'transform 0.15s ease, box-shadow 0.15s ease'
-                  }}
-                  className="resume-card"
-                >
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                      <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                        {resume.title}
-                      </h3>
-                      <span
-                        style={{
-                          fontSize: '0.7rem',
-                          fontWeight: 700,
-                          padding: '2px 8px',
-                          borderRadius: 'var(--radius-sm)',
-                          background: tmplObj.isAtsSafe ? 'var(--accent-light)' : 'var(--bg-hover)',
-                          color: tmplObj.isAtsSafe ? 'var(--accent)' : 'var(--text-secondary)',
-                          textTransform: 'uppercase'
-                        }}
-                      >
-                        {tmplObj.name} {tmplObj.isAtsSafe ? '✓ ATS' : ''}
-                      </span>
-                    </div>
-
-                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
-                      {resume.answers?.targetJobTitle || 'Professional Role'} • v{resume.version || 1}
-                    </p>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', color: 'var(--text-tertiary)', marginBottom: '1rem' }}>
-                      <Calendar size={13} />
-                      <span>Updated {dateStr}</span>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: '0.75rem' }}>
-                    <button
-                      type="button"
-                      className="btn btn-primary btn-xs"
-                      onClick={() => handleOpenResume(resume.id)}
-                    >
-                      <Edit3 size={13} />
-                      <span>Edit Resume</span>
-                    </button>
-
-                    <div style={{ display: 'flex', gap: '0.4rem' }}>
-                      <button
-                        type="button"
-                        className="btn btn-outline btn-xs"
-                        onClick={() => handleDuplicate(resume.id)}
-                        title="Duplicate resume"
-                      >
-                        <Copy size={13} />
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-outline btn-xs"
-                        onClick={() => handleRename(resume.id, resume.title)}
-                        title="Rename resume"
-                      >
-                        <Edit3 size={13} />
-                      </button>
-                      {resumes.length > 1 && (
-                        <button
-                          type="button"
-                          className="btn btn-danger btn-xs"
-                          onClick={() => handleDelete(resume.id)}
-                          title="Delete resume"
-                        >
-                          <Trash2 size={13} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="resumes-empty-card">
-            <div className="empty-icon-circle">
-              <FileText size={32} />
-            </div>
-            <h3>No resumes created yet</h3>
-            <p>
-              Start your first ATS-optimized resume in under 5 minutes with our step-by-step AI assistant.
-            </p>
-            <button
-              type="button"
-              className="btn btn-secondary btn-lg"
-              onClick={handleCreateNew}
-            >
-              <img src={logoImg} alt="AI" style={{ width: 16, height: 16, borderRadius: 'var(--radius-sm)' }} />
-              <span>Start Building Now</span>
-            </button>
-          </div>
-        )}
-      </section>
     </div>
   );
 };
