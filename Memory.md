@@ -87,6 +87,19 @@ Keep these out unless the user explicitly reintroduces them:
   - **Phase 6 — AI Assistant**: Professional summary generator (3 styles), bullet optimizer (Google XYZ formula), grammar & active voice polish, keyword suggestion engine, template recommender, and strict user approval diff workflow (`AiAssistantModal.jsx`).
   - **Phase 7 — Export & Quality**: Pre-download Quality Inspection modal (`ExportQualityModal.jsx`), selectable text PDF with clickable links, DOCX export supporting custom sections (`docxService.js`, `pdfService.js`).
   - All verified with unit tests (`test_all_upgrades.js`, `test_all_phases.js`) and clean Vite production build.
+- [x] **Brand Color Theme Redesign (Royal Blue + White + Violet)**:
+  - **Brand Tokens**: Royal Blue (`#2563EB`), White (`#FFFFFF`), Violet (`#7C3AED`), Dark Navy (`#0F172A`), Light Blue (`#EFF6FF`), Light Violet (`#F5F3FF`), Border Gray (`#E2E8F0`), Muted Text (`#64748B`), Success Green (`#16A34A`).
+  - **Component Styling**: Primary buttons (Royal Blue with darker blue hover), Secondary buttons (White background with Royal Blue/Violet border and light hover), Headings in Dark Navy, subtle Royal-Blue-to-Violet gradient (`#2563EB` to `#7C3AED`) on main CTAs / AI highlights / floating chat, green strictly for positive results / ATS score / confirmations.
+  - **Site-Wide Application**: Navigation bar, Welcome Screen, Login/Register, Dashboard, Builder topbar & Design Studio, ATS Strength Checker, AI Career Advisor, Modals (AI Assistant, Export Quality, Feedback), and scroll indicators.
+  - **Resume Document Protection**: Preserved all 12 resume templates (Classic, Modern, Minimal, etc.) and individual user customization without forcing site brand colors onto candidate export resumes.
+  - All verified with `test_theme_redesign.js`, `test_all_phases.js`, `test_all_upgrades.js`, and `npm run build`.
+
+- [x] **Resumax Promotional Poster Integration (Homepage)**:
+  - **Poster Asset**: Exact user-supplied promotional poster asset copied to `public/assets/resumax-promotional-poster.jpg` and `src/assets/resumax-promotional-poster.jpg`.
+  - **Placement**: Rendered immediately below the existing navbar at the very top of `src/pages/Dashboard.jsx`, before the existing welcome/hero banner.
+  - **Preservation**: Existing navbar strictly untouched; existing hero section and all serial feature showcases preserved in original order.
+  - **Responsiveness**: Displayed as a responsive `<img>` element with `width: 100%`, `height: auto`, `object-fit: contain`, zero distortion, and no horizontal overflow across desktop and mobile.
+  - **Verification**: Verified with `test_promotional_poster.js`, `npm run build`, and browser testing.
 
 ## 6. Related Documentation & Core Files
 

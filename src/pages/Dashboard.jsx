@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Sparkles,
   FileText,
@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logoImg from '../assets/logo.png';
+import promotionalPosterImg from '../assets/resumax-promotional-poster.jpg';
 import {
   getAllResumes,
   setActiveResumeId,
@@ -78,6 +79,15 @@ export const Dashboard = ({ onNavigate }) => {
 
   return (
     <div className="dashboard-container">
+      {/* Attached Resumax Promotional Poster (Immediately Below Navbar) */}
+      <div className="promotional-poster-container" id="promotional-poster">
+        <img
+          src={promotionalPosterImg}
+          alt="Resumax - Maximize Your Resume. Maximize Your Opportunities. Create Professional Resumes with AI."
+          className="promotional-poster-img"
+        />
+      </div>
+
       {/* 1. Hero / Welcome Banner */}
       <section className="welcome-banner reveal-up">
         <div className="welcome-badge">
@@ -301,7 +311,7 @@ export const Dashboard = ({ onNavigate }) => {
               <div className="showcase-actions">
                 <button
                   type="button"
-                  className="btn btn-primary btn-lg"
+                  className="btn btn-gradient btn-lg"
                   onClick={() => onNavigate('advisor')}
                 >
                   <MessageSquare size={18} />

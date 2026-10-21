@@ -77,7 +77,7 @@ export const Navbar = ({ onNavigate, currentPage }) => {
             </button>
             <button
               type="button"
-              className={`nav-link-btn ${currentPage === 'advisor' ? 'active' : ''}`}
+              className={`nav-link-btn ${currentPage === 'advisor' ? 'active ai-nav-item' : ''}`}
               onClick={() => handleNavClick('advisor')}
             >
               AI Advisor
@@ -207,7 +207,7 @@ export const Navbar = ({ onNavigate, currentPage }) => {
 
                   <button
                     type="button"
-                    className={`mobile-nav-item ${currentPage === 'advisor' ? 'active' : ''}`}
+                    className={`mobile-nav-item ${currentPage === 'advisor' ? 'active ai-nav-item' : ''}`}
                     onClick={() => handleNavClick('advisor')}
                   >
                     <MessageSquare size={18} />

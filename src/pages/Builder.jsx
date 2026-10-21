@@ -264,8 +264,7 @@ export const Builder = ({
           <button
             type="button"
             onClick={() => setIsAiModalOpen(true)}
-            className="btn btn-secondary btn-sm"
-            style={{ background: 'var(--accent-light)', color: 'var(--accent)', borderColor: 'var(--accent)' }}
+            className="btn btn-secondary-violet btn-sm btn-ai-sparkle"
             title="Launch AI Resume Assistant"
           >
             <Sparkles size={14} />
