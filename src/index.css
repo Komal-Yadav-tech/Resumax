@@ -8731,6 +8731,279 @@ input:checked + .slider:before {
 }
 
 /* ==========================================================================
+   MULTI-DEVICE RESPONSIVE SUITE: Mobile, Tablet, Laptop, Desktop PC
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Ultra-Compact Mobile Phones (<= 380px: iPhone SE, Galaxy Mini)
+   -------------------------------------------------------------------------- */
+@media (max-width: 380px) {
+  .hero-main-heading {
+    font-size: 1.5rem !important;
+  }
+  .hero-description {
+    font-size: 0.85rem !important;
+  }
+  .brand-title-text {
+    font-size: 0.95rem !important;
+  }
+  .brand-badge {
+    display: none;
+  }
+  .welcome-main-heading {
+    font-size: 1.65rem !important;
+  }
+  .template-cards-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .qa-navigation-bar {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .qa-navigation-bar .btn {
+    width: 100%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   2. All Mobile Phones (<= 640px: iOS Safari, Android, Safe Areas)
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  /* Safe-area insets & touch sizing */
+  body {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .navbar {
+    padding-top: max(0.6rem, env(safe-area-inset-top, 0px));
+  }
+
+  /* Floating controls separation: prevent overlap */
+  .floating-chat-root {
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px)) !important;
+    right: 1rem !important;
+  }
+
+  .floating-chat-trigger {
+    padding: 0.6rem 1rem !important;
+    font-size: 0.825rem !important;
+  }
+
+  .scroll-to-top-btn {
+    bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)) !important;
+    right: 1rem !important;
+    width: 42px !important;
+    height: 42px !important;
+  }
+
+  /* Form navigation touch ergonomics */
+  .qa-navigation-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .qa-navigation-bar .btn {
+    flex: 1;
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  /* Responsive Modals */
+  .modal-dialog-box,
+  .template-modal-container,
+  .export-quality-container {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    margin: 0 auto;
+    border-radius: var(--radius-md) !important;
+  }
+
+  /* ATS Dropzone & Scorecards */
+  .ats-upload-tabs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .ats-upload-tab-btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 42px;
+  }
+
+  .dropzone-title {
+    font-size: 0.9rem !important;
+  }
+
+  /* Resume sheet viewport touch scrolling */
+  .resume-sheet-viewport {
+    -webkit-overflow-scrolling: touch;
+    padding: 0.5rem 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. Tablets (641px - 1024px: iPads, Android Tablets, Surface)
+   -------------------------------------------------------------------------- */
+@media (min-width: 641px) and (max-width: 1024px) {
+  /* Dashboard Hero Grid: 2x2 Clean Balanced Reflow */
+  .hero-features-row {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.25rem !important;
+    padding: 1.25rem !important;
+  }
+
+  .hero-feature-divider {
+    display: none !important;
+  }
+
+  .hero-bottom-highlights {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.25rem;
+  }
+
+  /* Showcase Section Tablet Reflow: Single-column comfortable story layout */
+  .showcase-grid,
+  .showcase-grid-reversed {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+
+  .showcase-visual {
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+  }
+
+  /* Navbar Tablet Polish */
+  .navbar-container {
+    padding: 0 1rem;
+  }
+
+  .nav-center-links.desktop-only-nav {
+    gap: 0.5rem;
+  }
+
+  .nav-link-btn {
+    padding: 0.4rem 0.65rem;
+    font-size: 0.85rem;
+  }
+
+  /* Template Grid on Tablet: 3 Columns */
+  .template-cards-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1rem;
+  }
+
+  /* Builder Tablet Polish */
+  .builder-grid-layout {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem;
+  }
+
+  .builder-topbar {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .builder-topbar-actions {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* ATS Checker Tablet */
+  .ats-main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem;
+  }
+
+  .scorecard-breakdown-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Career Advisor Tablet */
+  .advisor-main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem;
+  }
+
+  .advisor-sidebar-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  /* Admin Dashboard Tablet */
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .funnel-metric-row {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   4. Laptops & Standard Desktops (1025px - 1440px)
+   -------------------------------------------------------------------------- */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .dashboard-container,
+  .builder-container,
+  .ats-checker-page,
+  .career-advisor-page,
+  .admin-page-layout {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .builder-grid-layout {
+    grid-template-columns: 1fr 1.15fr;
+    gap: 1.75rem;
+  }
+
+  .template-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. Large Desktop PCs & Widescreen Monitors (1441px and wider)
+   -------------------------------------------------------------------------- */
+@media (min-width: 1441px) {
+  .dashboard-container,
+  .builder-container,
+  .ats-checker-page,
+  .career-advisor-page,
+  .admin-page-layout {
+    max-width: min(1560px, 90vw);
+    margin: 0 auto;
+  }
+
+  .navbar-container {
+    max-width: min(1560px, 90vw);
+  }
+
+  .builder-grid-layout {
+    grid-template-columns: 1fr 1.2fr;
+    gap: 2.5rem;
+  }
+
+  .template-cards-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+
+  .a4-fixed-canvas {
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.18) !important;
+  }
+}
+
+/* ==========================================================================
    A4 Canvas & 1-Page Guarantee Styles (Step 1)
    ========================================================================== */
 

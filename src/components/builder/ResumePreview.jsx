@@ -32,8 +32,15 @@ export const ResumePreview = ({
 }) => {
   const [isExporting, setIsExporting] = useState(false);
   const [activeFormat, setActiveFormat] = useState('pdf');
-  const [zoomLevel, setZoomLevel] = useState(0.85); // Default fit zoom for A4 in split view
   const [isQualityModalOpen, setIsQualityModalOpen] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(() => {
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth <= 480) return 0.45;
+      if (window.innerWidth <= 768) return 0.60;
+      if (window.innerWidth <= 1024) return 0.72;
+    }
+    return 0.85;
+  });
   const [overflowState, setOverflowState] = useState({
     isOverflowing: false,
     overflowPx: 0,

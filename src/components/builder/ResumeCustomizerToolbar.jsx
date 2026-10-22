@@ -259,7 +259,14 @@ export const ResumeCustomizerToolbar = ({
             <button
               type="button"
               className="zoom-btn"
-              onClick={() => setZoomLevel && setZoomLevel(0.85)}
+              onClick={() => {
+                if (!setZoomLevel) return;
+                const width = typeof window !== 'undefined' ? window.innerWidth : 1200;
+                if (width <= 480) setZoomLevel(0.45);
+                else if (width <= 768) setZoomLevel(0.60);
+                else if (width <= 1024) setZoomLevel(0.72);
+                else setZoomLevel(0.85);
+              }}
               title="Fit to Screen"
             >
               <Maximize2 size={13} />
