@@ -54,8 +54,21 @@ export const Builder = ({
     customizations: DEFAULT_DESIGN_CUSTOMIZATIONS
   };
 
-  const [answers, setAnswers] = useState(() => currentResume.answers || DEFAULT_RESUME_ANSWERS);
-  const [customizations, setCustomizations] = useState(() => currentResume.customizations || DEFAULT_DESIGN_CUSTOMIZATIONS);
+  // Sanitize answers defensively to avoid runtime crashes from missing fields
+  const sanitizeAnswers = (raw) => ({
+    ...DEFAULT_RESUME_ANSWERS,
+    ...(raw || {}),
+    contact: { ...DEFAULT_RESUME_ANSWERS.contact, ...(raw?.contact || {}) },
+    experience: Array.isArray(raw?.experience) && raw.experience.length > 0 ? raw.experience : DEFAULT_RESUME_ANSWERS.experience,
+    education: Array.isArray(raw?.education) && raw.education.length > 0 ? raw.education : DEFAULT_RESUME_ANSWERS.education,
+    skills: Array.isArray(raw?.skills) && raw.skills.length > 0 ? raw.skills : DEFAULT_RESUME_ANSWERS.skills
+  });
+
+  const [answers, setAnswers] = useState(() => sanitizeAnswers(currentResume.answers));
+  const [customizations, setCustomizations] = useState(() => ({
+    ...DEFAULT_DESIGN_CUSTOMIZATIONS,
+    ...(currentResume.customizations || {})
+  }));
   const [selectedTemplate, setSelectedTemplate] = useState(() => currentResume.templateId || 'classic');
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -72,8 +85,11 @@ export const Builder = ({
     setActiveResumeIdState(newResumeId);
     const target = resumesList.find((r) => r.id === newResumeId);
     if (target) {
-      setAnswers(target.answers || DEFAULT_RESUME_ANSWERS);
-      setCustomizations(target.customizations || DEFAULT_DESIGN_CUSTOMIZATIONS);
+      setAnswers(sanitizeAnswers(target.answers));
+      setCustomizations({
+        ...DEFAULT_DESIGN_CUSTOMIZATIONS,
+        ...(target.customizations || {})
+      });
       setSelectedTemplate(target.templateId || 'classic');
     }
   };

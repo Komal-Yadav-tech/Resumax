@@ -58,7 +58,14 @@ export const Dashboard = ({ onNavigate }) => {
 
         {/* Four Feature Highlights */}
         <div className="hero-features-row">
-          <div className="hero-feature-item">
+          <div
+            className="hero-feature-item"
+            onClick={() => onNavigate('builder')}
+            role="button"
+            tabIndex={0}
+            style={{ cursor: 'pointer' }}
+            title="Open AI Resume Builder"
+          >
             <div className="hero-feature-icon-circle icon-violet">
               <Sparkles size={20} />
             </div>
@@ -70,7 +77,14 @@ export const Dashboard = ({ onNavigate }) => {
 
           <div className="hero-feature-divider" />
 
-          <div className="hero-feature-item">
+          <div
+            className="hero-feature-item"
+            onClick={() => onNavigate('ats')}
+            role="button"
+            tabIndex={0}
+            style={{ cursor: 'pointer' }}
+            title="Open ATS Score Checker"
+          >
             <div className="hero-feature-icon-circle icon-green">
               <ShieldCheck size={20} />
             </div>
@@ -82,7 +96,14 @@ export const Dashboard = ({ onNavigate }) => {
 
           <div className="hero-feature-divider" />
 
-          <div className="hero-feature-item">
+          <div
+            className="hero-feature-item"
+            onClick={() => onNavigate('templates')}
+            role="button"
+            tabIndex={0}
+            style={{ cursor: 'pointer' }}
+            title="Explore Templates"
+          >
             <div className="hero-feature-icon-circle icon-blue">
               <Layers size={20} />
             </div>
@@ -94,7 +115,14 @@ export const Dashboard = ({ onNavigate }) => {
 
           <div className="hero-feature-divider" />
 
-          <div className="hero-feature-item">
+          <div
+            className="hero-feature-item"
+            onClick={() => onNavigate('builder')}
+            role="button"
+            tabIndex={0}
+            style={{ cursor: 'pointer' }}
+            title="Customize Resume in Builder"
+          >
             <div className="hero-feature-icon-circle icon-purple">
               <Edit3 size={20} />
             </div>
@@ -156,11 +184,22 @@ export const Dashboard = ({ onNavigate }) => {
           <div className="showcase-grid">
             {/* Left: Content */}
             <div className="showcase-content">
-              <div className="showcase-tag tag-blue">
+              <div
+                className="showcase-tag tag-blue"
+                onClick={() => onNavigate('builder')}
+                style={{ cursor: 'pointer' }}
+                title="Launch AI Resume Builder"
+              >
                 <Sparkles size={14} />
                 <span>Feature 01 • AI Builder</span>
               </div>
-              <h2>AI Conversational Resume Builder</h2>
+              <h2
+                onClick={() => onNavigate('builder')}
+                style={{ cursor: 'pointer' }}
+                title="Launch AI Resume Builder"
+              >
+                AI Conversational Resume Builder
+              </h2>
               <p className="showcase-desc">
                 Transition from a blank page to a downloadable, ATS-ready resume in minutes. Answer simple guided questions, and our AI automatically structures and enhances your bullet points with power verbs.
               </p>
@@ -201,7 +240,12 @@ export const Dashboard = ({ onNavigate }) => {
             </div>
 
             {/* Right: Interactive Visual Mockup */}
-            <div className="showcase-visual">
+            <div
+              className="showcase-visual"
+              onClick={() => onNavigate('builder')}
+              style={{ cursor: 'pointer' }}
+              title="Click to open Builder with Live Preview"
+            >
               <div className="mockup-window">
                 <div className="mockup-header">
                   <span className="dot red" />

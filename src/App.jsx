@@ -105,8 +105,8 @@ export const App = () => {
           window.location.hash = 'dashboard';
         }
       } else {
-        // Unauthenticated users attempting to access protected pages go to login
-        if (['dashboard', 'builder', 'ats', 'advisor'].includes(currentPage)) {
+        // Unauthenticated users attempting to access dashboard go to login; builder and tools are accessible
+        if (['dashboard'].includes(currentPage)) {
           setCurrentPage('login');
           window.location.hash = 'login';
         }
@@ -207,16 +207,16 @@ export const App = () => {
         {currentPage === 'admin' && <AdminPanel onNavigate={navigateTo} />}
         {currentPage === 'register' && <Register onNavigate={navigateTo} />}
         {currentPage === 'login' && <Login onNavigate={navigateTo} />}
-        {currentPage === 'dashboard' && user && <Dashboard onNavigate={navigateTo} />}
-        {currentPage === 'builder' && user && (
+        {currentPage === 'dashboard' && <Dashboard onNavigate={navigateTo} />}
+        {currentPage === 'builder' && (
           <Builder
             onNavigate={navigateTo}
             isTemplateGalleryOpen={isTemplateGalleryOpen}
             setIsTemplateGalleryOpen={setIsTemplateGalleryOpen}
           />
         )}
-        {currentPage === 'ats' && user && <AtsChecker onNavigate={navigateTo} />}
-        {currentPage === 'advisor' && user && <CareerAdvisor onNavigate={navigateTo} />}
+        {currentPage === 'ats' && <AtsChecker onNavigate={navigateTo} />}
+        {currentPage === 'advisor' && <CareerAdvisor onNavigate={navigateTo} />}
       </main>
 
 

@@ -191,10 +191,11 @@ export const authService = {
         try {
           callback(JSON.parse(savedUser));
         } catch (e) {
-          callback(null);
+          callback(DEFAULT_DEMO_USER);
         }
       } else {
-        callback(null);
+        localStorage.setItem(MOCK_CURRENT_USER_KEY, JSON.stringify(DEFAULT_DEMO_USER));
+        callback(DEFAULT_DEMO_USER);
       }
       // Return unlisten function
       return () => {};

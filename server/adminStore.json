@@ -6,20 +6,20 @@
     "role": "admin"
   },
   "analytics": {
-    "totalResumesCreated": 160,
+    "totalResumesCreated": 162,
     "totalResumesCompleted": 128,
     "totalRegisteredUsers": 156,
-    "resumesToday": 32,
-    "resumesThisWeek": 85,
-    "resumesThisMonth": 160,
+    "resumesToday": 34,
+    "resumesThisWeek": 87,
+    "resumesThisMonth": 162,
     "popularTemplates": {
       "classic": 52,
-      "ats-pro": 59,
+      "ats-pro": 61,
       "modern": 28,
       "minimal": 15,
       "other": 6
     },
-    "lastUpdated": "2026-10-21T19:32:34.895Z"
+    "lastUpdated": "2026-10-22T09:28:05.489Z"
   },
   "content": {
     "hero": {

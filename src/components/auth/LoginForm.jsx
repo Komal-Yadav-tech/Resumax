@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, AlertCircle, CheckCircle2, ArrowRight, KeyRound, X } from 'lucide-react';
+import { Mail, Lock, AlertCircle, CheckCircle2, ArrowRight, KeyRound, X, Sparkles } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export const LoginForm = ({ onNavigate }) => {
@@ -142,6 +142,34 @@ export const LoginForm = ({ onNavigate }) => {
           >
             {loading ? 'Logging in...' : 'Log In'}
             {!loading && <ArrowRight size={18} />}
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-outline btn-lg"
+            style={{
+              width: '100%',
+              marginTop: '0.6rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem'
+            }}
+            disabled={loading}
+            onClick={async () => {
+              try {
+                setLoading(true);
+                await login('demo@resumax.com', 'Password123!');
+                onNavigate('dashboard');
+              } catch (err) {
+                setError(err.message || 'Demo login failed.');
+              } finally {
+                setLoading(false);
+              }
+            }}
+          >
+            <Sparkles size={16} />
+            <span>⚡ Quick Demo Login (Alex Morgan)</span>
           </button>
         </form>
 
