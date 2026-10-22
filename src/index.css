@@ -1259,6 +1259,13 @@ a:hover {
   margin-bottom: 0.85rem;
 }
 
+.mockup-pill-badge.pill-purple,
+#feature-builder .mockup-pill-badge {
+  background: var(--secondary-light);
+  color: var(--secondary);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+}
+
 .mockup-diff-box {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -1294,6 +1301,25 @@ a:hover {
 .diff-item.ai .diff-label { color: var(--accent); }
 .diff-item.ai p { color: var(--text-primary); font-weight: 500; }
 .diff-item.ai strong { color: var(--accent); font-weight: 700; }
+
+#feature-builder .diff-item.ai .diff-label {
+  color: var(--secondary);
+}
+
+#feature-builder .diff-item.ai strong {
+  color: var(--secondary);
+}
+
+#feature-builder .mockup-footer-tags .tag-badge {
+  background: var(--secondary-light);
+  color: var(--secondary);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+}
+
+#feature-builder .showcase-card:hover {
+  box-shadow: var(--shadow-xl), 0 0 30px rgba(124, 58, 237, 0.18);
+  border-color: rgba(124, 58, 237, 0.35);
+}
 
 .mockup-footer-tags {
   display: flex;
