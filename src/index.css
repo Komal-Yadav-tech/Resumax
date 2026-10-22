@@ -2003,6 +2003,25 @@ a:hover {
 .diff-item.ai p { color: var(--text-primary); font-weight: 500; }
 .diff-item.ai strong { color: var(--accent); font-weight: 700; }
 
+.mockup-pill-badge.badge-purple {
+  background: var(--secondary-light);
+  color: var(--secondary);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+}
+
+.diff-item.ai.diff-item-purple .diff-label {
+  color: var(--secondary);
+}
+
+.diff-item.ai.diff-item-purple strong {
+  color: var(--secondary);
+}
+
+.showcase-card-purple:hover {
+  box-shadow: var(--shadow-xl), 0 0 30px rgba(124, 58, 237, 0.25) !important;
+  border-color: rgba(124, 58, 237, 0.35) !important;
+}
+
 .mockup-footer-tags {
   display: flex;
   flex-wrap: wrap;

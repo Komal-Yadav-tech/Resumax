@@ -463,12 +463,12 @@ export const Dashboard = ({ onNavigate }) => {
 
       {/* 2. Serial Showcase Section 1: AI Resume Builder */}
       <section className="showcase-section reveal-up" id="feature-builder">
-        <div className="showcase-card">
+        <div className="showcase-card showcase-card-purple">
           <div className="showcase-grid">
             {/* Left: Content */}
             <div className="showcase-content">
               <div
-                className="showcase-tag tag-blue"
+                className="showcase-tag tag-purple"
                 onClick={() => onNavigate('builder')}
                 style={{ cursor: 'pointer' }}
                 title="Launch AI Resume Builder"
@@ -489,15 +489,15 @@ export const Dashboard = ({ onNavigate }) => {
 
               <ul className="showcase-features-list">
                 <li>
-                  <CheckCircle2 size={16} className="feature-check-icon text-blue" />
+                  <CheckCircle2 size={16} className="feature-check-icon text-purple" />
                   <span><strong>Step-by-step Guided Flow:</strong> No formatting headache or blank page anxiety.</span>
                 </li>
                 <li>
-                  <CheckCircle2 size={16} className="feature-check-icon text-blue" />
+                  <CheckCircle2 size={16} className="feature-check-icon text-purple" />
                   <span><strong>Google XYZ Formula:</strong> Bullet points rewritten with quantifiable impact metrics.</span>
                 </li>
                 <li>
-                  <CheckCircle2 size={16} className="feature-check-icon text-blue" />
+                  <CheckCircle2 size={16} className="feature-check-icon text-purple" />
                   <span><strong>12+ ATS Safe Templates:</strong> Classic, Modern, and Minimal layouts ready to export.</span>
                 </li>
               </ul>
@@ -505,7 +505,7 @@ export const Dashboard = ({ onNavigate }) => {
               <div className="showcase-actions">
                 <button
                   type="button"
-                  className="btn btn-primary btn-lg"
+                  className="btn btn-gradient btn-lg"
                   onClick={() => onNavigate('builder')}
                 >
                   <Plus size={18} />
@@ -537,7 +537,7 @@ export const Dashboard = ({ onNavigate }) => {
                   <span className="mockup-title">AI Resume Assistant • Live Preview</span>
                 </div>
                 <div className="mockup-body">
-                  <div className="mockup-pill-badge">
+                  <div className="mockup-pill-badge badge-purple">
                     <Zap size={13} />
                     <span>Real-time AI Rewrite</span>
                   </div>
@@ -548,9 +548,9 @@ export const Dashboard = ({ onNavigate }) => {
                       <p>"I made websites faster and managed a team of developers."</p>
                     </div>
                     <div className="diff-arrow">
-                      <Sparkles size={16} color="var(--accent)" />
+                      <Sparkles size={16} color="var(--secondary)" />
                     </div>
-                    <div className="diff-item ai">
+                    <div className="diff-item ai diff-item-purple">
                       <span className="diff-label">✨ AI Google XYZ Impact:</span>
                       <p>
                         "Architected responsive React web apps, accelerating page loads by <strong>42%</strong> and leading an Agile squad of 5 engineers."
@@ -559,9 +559,9 @@ export const Dashboard = ({ onNavigate }) => {
                   </div>
 
                   <div className="mockup-footer-tags">
-                    <span className="tag-badge">✓ ATS Compatible</span>
-                    <span className="tag-badge">✓ PDF / DOCX Export</span>
-                    <span className="tag-badge">✓ 100% Free</span>
+                    <span className="quick-pill">✓ ATS Compatible</span>
+                    <span className="quick-pill">✓ PDF / DOCX Export</span>
+                    <span className="quick-pill">✓ 100% Free</span>
                   </div>
                 </div>
               </div>
