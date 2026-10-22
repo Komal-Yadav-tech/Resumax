@@ -359,7 +359,7 @@ export const Dashboard = ({ onNavigate }) => {
               <div className="showcase-actions">
                 <button
                   type="button"
-                  className="btn btn-primary btn-lg"
+                  className="btn btn-gradient btn-lg"
                   onClick={() => onNavigate('ats')}
                 >
                   <span>Check Resume Score</span>
