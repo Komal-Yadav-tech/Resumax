@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
+import { CHATBOT_SYSTEM_INSTRUCTION, processCareerChatMessage } from '../src/services/careerChatEngine.js';
 dotenv.config();
 
 const apiKey = process.env.GEMINI_API_KEY;
@@ -270,7 +271,7 @@ Evaluate and return in strict JSON format:
  */
 export const chatWithCareerAI = async (message, resumeContext = {}, chatHistory = []) => {
   const answers = resumeContext?.answers || resumeContext || {};
-  const targetRole = answers.targetJobTitle || 'your target role';
+  const targetRole = answers.targetJobTitle || 'Senior Frontend Engineer';
   const skills = (answers.skills || []).slice(0, 5).join(', ') || 'React, TypeScript, System Architecture';
   const experience = answers.experience || [];
   const latestExp = experience[0] || {};
@@ -278,74 +279,41 @@ export const chatWithCareerAI = async (message, resumeContext = {}, chatHistory 
   if (model) {
     try {
       const historyContext = (chatHistory || [])
-        .slice(-6)
-        .map((m) => `${m.role === 'user' ? 'User' : 'Advisor'}: ${m.content}`)
-        .join('\n');
+        .slice(-8)
+        .map((m) => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
+        .join('\n\n');
 
-      const prompt = `You are Resumax's AI Career Advisor — an encouraging, top-tier executive career coach and resume strategist.
-Candidate Profile:
+      const fullPrompt = `${CHATBOT_SYSTEM_INSTRUCTION}
+
+Candidate Profile Context:
 - Target Role: ${targetRole}
 - Skills: ${skills}
 - Latest Position: ${latestExp.role || 'Contributor'} at ${latestExp.company || 'Tech Company'}
+- Experience History: ${JSON.stringify(experience)}
 
-Conversation History:
-${historyContext}
+Recent Conversation History:
+${historyContext || '(No previous conversation)'}
 
-User Message: "${message}"
+User's Latest Message: "${message}"
 
-Provide a direct, empowering, and highly actionable response formatted cleanly with bold highlights and bullet points where helpful.`;
+Generate the direct, relevant, and properly formatted response according to the rules above.`;
 
-      const result = await model.generateContent(prompt);
-      return result.response.text();
+      const result = await model.generateContent({
+        contents: [{ role: 'user', parts: [{ text: fullPrompt }] }],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 1000
+        }
+      });
+      const responseText = result.response.text();
+      if (responseText && responseText.trim().length > 0) {
+        return responseText.trim();
+      }
     } catch (err) {
       console.warn('Gemini chat failed, using fallback engine:', err.message);
     }
   }
 
-  // Fallback intelligent coaching logic
-  const query = (message || '').toLowerCase();
-
-  if (query.includes('interview') || query.includes('question') || query.includes('practice') || query.includes('behavioral') || query.includes('technical')) {
-    return `Based on your resume for **${targetRole}** with core skills in **${skills}**, here are the top 4 interview questions you should prepare for:
-
-1. **Technical Architecture:** *"How do you design scalable applications with ${skills.split(',')[0] || 'your core stack'} while balancing performance and maintainability?"*
-2. **Leadership & Collaboration (STAR Method):** *"Tell me about a time at ${latestExp.company || 'your previous company'} when you faced a difficult technical disagreement. How did you align the team and deliver?"*
-3. **Problem Solving & Debugging:** *"Describe the most complex production bottleneck or bug you diagnosed. What metrics did you use to measure success?"*
-4. **Impact & Metrics:** *"Walk me through a project where you drove measurable business outcomes (speed, revenue, user retention)."*
-
-💡 **Strategy:** Structure your answers using the **STAR method** (Situation, Task, Action, Result) with specific percentages and outcomes!`;
-  }
-
-  if (query.includes('gap') || query.includes('break') || query.includes('transition') || query.includes('pivot') || query.includes('unemployed') || query.includes('layoff')) {
-    return `Explaining a career gap is all about confidence and pivoting forward. Here is a proven 3-step script tailored for **${targetRole}**:
-
-1. **Be concise and positive:** *"During that period, I took intentional time to focus on professional upskilling, personal development, and independent projects."*
-2. **Highlight active learning & skills:** *"I dedicated over 150 hours to mastering modern practices in ${skills}, building end-to-end applications, and contributing to technical problem solving."*
-3. **Pivot immediately to the future:** *"Now I am completely energized and focused on bringing my expertise in ${targetRole} to deliver high-impact results for your team."*
-
-💡 **ATS Tip:** Focus on skill acquisition and continuous momentum in your timeline!`;
-  }
-
-  if (query.includes('skill') || query.includes('ats') || query.includes('keyword') || query.includes('score') || query.includes('tailor')) {
-    return `To maximize your ATS match score for **${targetRole}**, here are top recommendations for your resume:
-
-- **Core Technical Stack:** Ensure in-demand keywords like **${skills}**, *CI/CD, Cloud Architecture (AWS/GCP), Automated Testing*, and *RESTful APIs* are prominently placed.
-- **Section Headers:** Stick to standard titles like *Professional Summary, Work Experience, Education, Skills*.
-- **Keyword Density:** Mention your primary skills 2–3 times across your Summary and Work Experience bullets so ATS parsers recognize strong topical authority.
-- **Action Verbs:** Start every single bullet with strong verbs like *Architected, Engineered, Orchestrated, Optimized, Delivered*.`;
-  }
-
-  if (query.includes('bullet') || query.includes('improve') || query.includes('rewrite') || query.includes('phrase') || query.includes('achievement')) {
-    return `Here are 3 high-impact ways to phrase your experience as a **${targetRole}** using power verbs and metrics:
-
-1. **Spearheaded core feature delivery:** *"Architected and deployed responsive modules utilizing ${skills.split(',')[0] || 'modern tech stack'}, reducing page load latency by 35% and improving user engagement across 50K+ monthly active users."*
-2. **Workflow & Performance Optimization:** *"Engineered automated testing and CI/CD pipelines, increasing sprint velocity by 25% and reducing production defect rates by 40%."*
-3. **Cross-Functional Leadership:** *"Collaborated with product, UI/UX, and engineering stakeholders at ${latestExp.company || 'your organization'} to deliver mission-critical milestones 2 weeks ahead of schedule."*
-
-💡 **Pro-tip:** Use the **Google XYZ Formula**: *Accomplished [X], as measured by [Y], by doing [Z].*`;
-  }
-
-  return `As your AI Career Advisor for **${targetRole}**, I'm here to help you stand out! 
-
-Your background in **${skills}** provides a strong foundation. We can polish your experience bullets, prepare for interviews with STAR behavioral responses, or optimize keywords for your target role. What would you like to focus on?`;
+  // Resilient, intent-aware local engine
+  return processCareerChatMessage(message, resumeContext, chatHistory);
 };

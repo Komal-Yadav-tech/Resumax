@@ -12,45 +12,86 @@ export const ChatMessage = ({ message }) => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Simple formatting helper for markdown-style bold and bullet lists
+  // Formatting helper for markdown-style headings, bold, italics, code, and lists
   const formatContent = (text) => {
     return text.split('\n').map((line, idx) => {
-      // Format bold: **text**
-      const formattedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      // Format italics: *text*
-      const italicLine = formattedLine.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      const trimmed = line.trim();
 
-      if (line.trim().startsWith('- ') || line.trim().startsWith('• ')) {
+      // Heading 3: ### Heading
+      if (trimmed.startsWith('### ')) {
+        const hText = trimmed.replace(/^###\s+/, '');
+        return (
+          <h4
+            key={idx}
+            className="chat-h4"
+            dangerouslySetInnerHTML={{ __html: hText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }}
+          />
+        );
+      }
+
+      // Heading 2: ## Heading
+      if (trimmed.startsWith('## ')) {
+        const hText = trimmed.replace(/^##\s+/, '');
+        return (
+          <h3
+            key={idx}
+            className="chat-h3"
+            dangerouslySetInnerHTML={{ __html: hText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }}
+          />
+        );
+      }
+
+      // Inline code: `code`
+      let formattedLine = line.replace(/`([^`]+)`/g, '<code class="chat-inline-code">$1</code>');
+      // Format bold: **text**
+      formattedLine = formattedLine.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      // Format italics: *text*
+      formattedLine = formattedLine.replace(/\*([^\*]+)\*/g, '<em>$1</em>');
+
+      // Blockquotes: > quote
+      if (trimmed.startsWith('> ')) {
+        return (
+          <blockquote
+            key={idx}
+            className="chat-quote"
+            dangerouslySetInnerHTML={{ __html: formattedLine.replace(/^>\s*/, '') }}
+          />
+        );
+      }
+
+      // Bullet items: - or •
+      if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
         return (
           <li
             key={idx}
+            className="chat-li"
             dangerouslySetInnerHTML={{
-              __html: italicLine.replace(/^[-•]\s*/, '')
+              __html: formattedLine.replace(/^[-•]\s*/, '')
             }}
-            style={{ marginLeft: '1.25rem', marginBottom: '0.25rem' }}
           />
         );
       }
 
-      if (/^\d+\.\s/.test(line.trim())) {
+      // Numbered items: 1. 2. etc.
+      if (/^\d+\.\s/.test(trimmed)) {
         return (
           <div
             key={idx}
-            dangerouslySetInnerHTML={{ __html: italicLine }}
-            style={{ marginBottom: '0.4rem', paddingLeft: '0.5rem' }}
+            className="chat-numbered-item"
+            dangerouslySetInnerHTML={{ __html: formattedLine }}
           />
         );
       }
 
-      if (!line.trim()) {
-        return <div key={idx} style={{ height: '0.5rem' }} />;
+      if (!trimmed) {
+        return <div key={idx} style={{ height: '0.4rem' }} />;
       }
 
       return (
         <p
           key={idx}
-          dangerouslySetInnerHTML={{ __html: italicLine }}
-          style={{ marginBottom: '0.35rem' }}
+          className="chat-p"
+          dangerouslySetInnerHTML={{ __html: formattedLine }}
         />
       );
     });

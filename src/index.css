@@ -6095,6 +6095,54 @@ body.template-gallery-active {
   box-shadow: var(--shadow-sm);
 }
 
+.chat-h3 {
+  font-size: 1.02rem;
+  font-weight: 700;
+  margin: 0.65rem 0 0.35rem 0;
+  color: var(--text-primary);
+}
+
+.chat-h4 {
+  font-size: 0.94rem;
+  font-weight: 700;
+  margin: 0.55rem 0 0.25rem 0;
+  color: var(--text-primary);
+}
+
+.chat-p {
+  margin-bottom: 0.4rem;
+}
+
+.chat-li {
+  margin-left: 1.25rem;
+  margin-bottom: 0.3rem;
+  line-height: 1.5;
+}
+
+.chat-numbered-item {
+  margin-bottom: 0.45rem;
+  padding-left: 0.25rem;
+  line-height: 1.5;
+}
+
+.chat-inline-code {
+  background: var(--bg-tertiary);
+  color: var(--accent);
+  padding: 0.15rem 0.35rem;
+  border-radius: var(--radius-sm);
+  font-family: monospace;
+  font-size: 0.85em;
+  border: 1px solid var(--border);
+}
+
+.chat-quote {
+  border-left: 3px solid var(--secondary);
+  padding-left: 0.75rem;
+  margin: 0.5rem 0;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
 .msg-assistant .chat-bubble-content {
   background: var(--bg-secondary);
   color: var(--text-primary);
