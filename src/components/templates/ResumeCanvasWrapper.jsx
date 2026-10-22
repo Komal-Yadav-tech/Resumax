@@ -80,6 +80,12 @@ export const ResumeCanvasWrapper = ({
   // Color palette
   const colorPalette = resolveThemePalette(themeColorKey, customHexColor);
 
+  const prevReportRef = useRef({
+    isOverflowing: false,
+    pageCount: 1,
+    overflowPx: 0
+  });
+
   // Monitor overflow & page boundaries
   useLayoutEffect(() => {
     const el = containerRef.current;
@@ -89,23 +95,38 @@ export const ResumeCanvasWrapper = ({
       // 96 DPI: A4 is 297mm (~1122.5px), US Letter is 11in (~1056px)
       const targetPageHeight = pageSize === 'letter' ? 1056 : 1122.5;
       const scrollH = el.scrollHeight;
-      const clientH = el.clientHeight || targetPageHeight;
 
       const isOverflowing = scrollH > targetPageHeight + 6;
       const overflowPx = Math.max(0, scrollH - targetPageHeight);
       const calculatedPages = Math.max(1, Math.ceil(scrollH / (targetPageHeight - 20)));
 
-      const newState = {
-        isOverflowing,
-        overflowPx,
-        pageCount: calculatedPages,
-        pageHeightPx: targetPageHeight
-      };
+      const prev = prevReportRef.current;
+      const isChanged =
+        prev.isOverflowing !== isOverflowing ||
+        prev.pageCount !== calculatedPages ||
+        Math.abs(prev.overflowPx - overflowPx) > 4;
 
-      setOverflowState(newState);
-      const notifyCallback = onOverflowStatusChange || customizations?.onOverflowStatusChange;
-      if (notifyCallback) {
-        notifyCallback(newState);
+      if (isChanged) {
+        prevReportRef.current = {
+          isOverflowing,
+          pageCount: calculatedPages,
+          overflowPx
+        };
+
+        const newState = {
+          isOverflowing,
+          overflowPx,
+          pageCount: calculatedPages,
+          pageHeightPx: targetPageHeight
+        };
+
+        setOverflowState(newState);
+        const notifyCallback = onOverflowStatusChange || customizations?.onOverflowStatusChange;
+        if (notifyCallback) {
+          requestAnimationFrame(() => {
+            notifyCallback(newState);
+          });
+        }
       }
     };
 
@@ -116,7 +137,6 @@ export const ResumeCanvasWrapper = ({
 
     return () => ro.disconnect();
   }, [
-    children,
     fontSizeSetting,
     spacingSetting,
     fontStyle,

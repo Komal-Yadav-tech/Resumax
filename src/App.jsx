@@ -55,7 +55,21 @@ export const App = () => {
       return;
     }
 
-    // Always show welcome first on initial load / refresh
+    // Direct hash access on initial load / refresh (e.g. #builder, #ats, #advisor, #templates, #dashboard)
+    const directInitialHash = (window.location.hash || '').replace('#', '').trim();
+    if (!hasVisitedWelcome && directInitialHash && ['builder', 'ats', 'advisor', 'templates', 'dashboard'].includes(directInitialHash)) {
+      setHasVisitedWelcome(true);
+      if (directInitialHash === 'templates') {
+        setCurrentPage('builder');
+        setIsTemplateGalleryOpen(true);
+      } else {
+        setCurrentPage(directInitialHash);
+        setIsTemplateGalleryOpen(false);
+      }
+      return;
+    }
+
+    // Always show welcome first on initial load / refresh if no specific section hash is requested
     if (!hasVisitedWelcome) {
       setCurrentPage('welcome');
       setIsTemplateGalleryOpen(false);

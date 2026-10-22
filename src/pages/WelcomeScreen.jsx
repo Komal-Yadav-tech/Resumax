@@ -10,11 +10,15 @@ export const WelcomeScreen = ({ onNavigate }) => {
   const DISPLAY_DELAY_MS = 3000; // 3 seconds display
   const TRANSITION_DURATION_MS = 650; // 0.65 seconds smooth transition
 
-  // Transition handler to Hero/Dashboard page
+  // Transition handler to Hero/Dashboard page or specific requested hash
   const triggerTransition = () => {
     setIsExiting(true);
     setTimeout(() => {
-      const destination = user ? 'dashboard' : 'login';
+      const targetHash = (window.location.hash || '').replace('#', '').trim();
+      const destination =
+        targetHash && targetHash !== 'welcome'
+          ? targetHash
+          : user ? 'dashboard' : 'login';
       if (onNavigate) onNavigate(destination);
     }, TRANSITION_DURATION_MS);
   };
