@@ -1058,6 +1058,714 @@ a:hover {
   flex-shrink: 0;
 }
 
+/* ==========================================================================
+   Hero Two-Column Layout & Right-Side Resume Showcase
+   ========================================================================== */
+
+.hero-layout-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.15fr);
+  gap: clamp(1.75rem, 3.2vw, 3.25rem);
+  align-items: center;
+}
+
+.hero-content-left {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hero-showcase-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  position: relative;
+  min-width: 0;
+}
+
+/* 1. Top Student Visual */
+.hero-student-section {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+  margin-bottom: -18px;
+  z-index: 10;
+  padding-left: 2rem;
+}
+
+.hero-future-callout {
+  position: absolute;
+  left: clamp(0.5rem, 3vw, 2.5rem);
+  top: -8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: rotate(-5deg);
+  z-index: 12;
+  user-select: none;
+}
+
+.hero-future-text {
+  font-family: 'Caveat', 'Dancing Script', cursive;
+  font-size: clamp(1.2rem, 1.8vw, 1.45rem);
+  font-weight: 700;
+  color: #2563EB;
+  line-height: 1.05;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="dark"] .hero-future-text {
+  color: #60A5FA;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+.hero-future-arrow {
+  width: 44px;
+  height: 30px;
+  margin-top: -3px;
+  margin-left: 22px;
+  filter: drop-shadow(0 1px 1px rgba(37, 99, 235, 0.3));
+}
+
+.hero-student-wrapper {
+  position: relative;
+  width: 175px;
+  height: 155px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.hero-student-blob {
+  position: absolute;
+  width: 155px;
+  height: 155px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(191, 219, 254, 0.65) 0%, rgba(221, 214, 254, 0.45) 60%, rgba(255, 255, 255, 0) 100%);
+  top: 0;
+  left: 10px;
+  z-index: 1;
+}
+
+[data-theme="dark"] .hero-student-blob {
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.25) 0%, rgba(124, 58, 237, 0.2) 65%, transparent 100%);
+}
+
+.hero-student-img {
+  position: relative;
+  z-index: 2;
+  height: 155px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px rgba(15, 23, 42, 0.12));
+}
+
+/* 2. Main Showcase Stage */
+.hero-showcase-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.25rem 0.5rem 1rem 0;
+  z-index: 5;
+}
+
+/* A. Floating ATS Score Card */
+.hero-floating-ats-card {
+  position: absolute;
+  top: -6px;
+  right: clamp(100px, 18%, 130px);
+  z-index: 25;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 8px 14px;
+  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.14), 0 4px 10px -2px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: floatGentle 5s ease-in-out infinite;
+  backdrop-filter: blur(8px);
+}
+
+[data-theme="dark"] .hero-floating-ats-card {
+  background: #1E293B;
+  border-color: #334155;
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.hero-ats-ring-wrap {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hero-ats-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hero-ats-card-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+[data-theme="dark"] .hero-ats-card-label {
+  color: #94A3B8;
+}
+
+.hero-ats-card-score {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+[data-theme="dark"] .hero-ats-card-score {
+  color: #F8FAFC;
+}
+
+.hero-ats-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #16A34A;
+  color: #FFFFFF;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  width: fit-content;
+  line-height: 1.2;
+}
+
+/* B. Floating AI Powered Badge */
+.hero-floating-ai-badge {
+  position: absolute;
+  bottom: 0px;
+  left: 8px;
+  z-index: 25;
+  background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+  color: #FFFFFF;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  box-shadow: 0 8px 20px -2px rgba(37, 99, 235, 0.45);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.02em;
+}
+
+.hero-ai-badge-icon {
+  flex-shrink: 0;
+  animation: pulse 2.5s infinite;
+}
+
+/* C. Main Resume Document Mockup */
+.hero-resume-mockup {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 142px 1fr;
+  background: #FFFFFF;
+  border-radius: 14px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 20px 42px -12px rgba(15, 23, 42, 0.15), 0 0 0 1px rgba(226, 232, 240, 0.8);
+  overflow: hidden;
+  position: relative;
+  z-index: 6;
+  min-height: 415px;
+}
+
+[data-theme="dark"] .hero-resume-mockup {
+  border-color: #334155;
+  box-shadow: 0 20px 42px -12px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(51, 65, 85, 0.8);
+}
+
+/* Sidebar (Dark Navy #0F172A) */
+.resume-mock-sidebar {
+  background: #0F172A;
+  color: #FFFFFF;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.resume-mock-avatar-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+  overflow: hidden;
+  margin: 0 auto 6px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.resume-mock-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.resume-mock-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  text-align: center;
+  margin: 0 0 2px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.resume-mock-role {
+  font-size: 0.58rem;
+  color: #94A3B8;
+  text-align: center;
+  display: block;
+  margin-bottom: 10px;
+  line-height: 1.25;
+}
+
+.resume-mock-contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 8px;
+}
+
+.resume-mock-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.53rem;
+  color: #CBD5E1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.mock-contact-icon {
+  flex-shrink: 0;
+  color: #93C5FD;
+}
+
+.resume-mock-section-title {
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.resume-mock-section-title.sidebar-title {
+  color: #FFFFFF;
+  margin-bottom: 6px;
+}
+
+.resume-mock-skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.mock-skill-pill {
+  background: rgba(37, 99, 235, 0.45);
+  border: 1px solid rgba(147, 197, 253, 0.25);
+  color: #EFF6FF;
+  font-size: 0.51rem;
+  font-weight: 500;
+  padding: 1.5px 5.5px;
+  border-radius: 9999px;
+  line-height: 1.25;
+}
+
+/* Body Area */
+.resume-mock-body {
+  background: #FFFFFF;
+  padding: 12px 14px 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+[data-theme="dark"] .resume-mock-body {
+  background: #0B1120;
+}
+
+.resume-mock-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.resume-mock-header-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-bottom: 1px solid #E2E8F0;
+  padding-bottom: 2px;
+  margin-bottom: 2px;
+}
+
+[data-theme="dark"] .resume-mock-header-row {
+  border-color: #1E293B;
+}
+
+.mock-header-icon {
+  color: #0F172A;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .mock-header-icon {
+  color: #60A5FA;
+}
+
+.resume-mock-body .resume-mock-section-title {
+  color: #0F172A;
+  font-size: 0.63rem;
+}
+
+[data-theme="dark"] .resume-mock-body .resume-mock-section-title {
+  color: #F8FAFC;
+}
+
+.mock-entry-title {
+  font-size: 0.61rem;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.25;
+}
+
+[data-theme="dark"] .mock-entry-title {
+  color: #E2E8F0;
+}
+
+.mock-entry-meta {
+  font-size: 0.53rem;
+  color: #64748B;
+  margin-bottom: 2px;
+  line-height: 1.2;
+}
+
+[data-theme="dark"] .mock-entry-meta {
+  color: #94A3B8;
+}
+
+.mock-entry-cgpa {
+  font-size: 0.53rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+[data-theme="dark"] .mock-entry-cgpa {
+  color: #CBD5E1;
+}
+
+.mock-bullets {
+  margin: 0;
+  padding-left: 11px;
+  font-size: 0.51rem;
+  color: #334155;
+  line-height: 1.35;
+}
+
+[data-theme="dark"] .mock-bullets {
+  color: #94A3B8;
+}
+
+.mock-bullets li {
+  margin-bottom: 1px;
+}
+
+/* D. Template Preview Cards Column */
+.hero-template-previews {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 104px;
+  flex-shrink: 0;
+  z-index: 7;
+}
+
+.hero-template-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 9px;
+  padding: 6px 7px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px -2px rgba(15, 23, 42, 0.05);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+}
+
+[data-theme="dark"] .hero-template-card {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+.hero-template-card:hover {
+  transform: translateX(3px);
+  border-color: #2563EB;
+  box-shadow: 0 6px 14px -2px rgba(37, 99, 235, 0.25);
+}
+
+.hero-template-card-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.hero-template-card-icon-wrap {
+  width: 17px;
+  height: 17px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hero-template-card-icon-wrap.icon-blue {
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563EB;
+}
+
+.hero-template-card-icon-wrap.icon-purple {
+  background: rgba(124, 58, 237, 0.12);
+  color: #7C3AED;
+}
+
+.hero-template-card-icon-wrap.icon-navy {
+  background: rgba(15, 23, 42, 0.1);
+  color: #0F172A;
+}
+
+[data-theme="dark"] .hero-template-card-icon-wrap.icon-navy {
+  background: rgba(255, 255, 255, 0.12);
+  color: #93C5FD;
+}
+
+.hero-template-card-name {
+  font-size: 0.63rem;
+  font-weight: 700;
+  color: #0F172A;
+  flex: 1;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .hero-template-card-name {
+  color: #F8FAFC;
+}
+
+.hero-template-check-icon {
+  flex-shrink: 0;
+}
+
+.hero-mini-wireframe {
+  background: #F8FAFC;
+  border: 1px dashed #E2E8F0;
+  border-radius: 5px;
+  padding: 4px;
+  height: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5px;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .hero-mini-wireframe {
+  background: #0F172A;
+  border-color: #334155;
+}
+
+.wireframe-bar-header {
+  height: 3.5px;
+  background: #93C5FD;
+  border-radius: 2px;
+  width: 60%;
+}
+
+.wireframe-line {
+  height: 2px;
+  background: #CBD5E1;
+  border-radius: 1px;
+}
+
+[data-theme="dark"] .wireframe-line {
+  background: #475569;
+}
+
+.line-full { width: 100%; }
+.line-80 { width: 80%; }
+.line-75 { width: 75%; }
+.line-70 { width: 70%; }
+.line-60 { width: 60%; }
+.line-50 { width: 50%; }
+
+.wireframe-modern {
+  display: grid;
+  grid-template-columns: 7px 1fr;
+  gap: 3.5px;
+}
+
+.wireframe-col-left {
+  background: #DDD6FE;
+  border-radius: 1.5px;
+  height: 100%;
+}
+
+.wireframe-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wireframe-minimal .line-header {
+  width: 45%;
+  background: #94A3B8;
+}
+
+.hero-more-templates-btn {
+  background: none;
+  border: none;
+  color: #7C3AED;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 3px 0;
+  text-align: center;
+  transition: color 0.2s ease, transform 0.2s ease;
+  user-select: none;
+}
+
+.hero-more-templates-btn:hover {
+  color: #2563EB;
+  transform: translateY(-1px);
+}
+
+/* 3. Bottom Promotional Highlights */
+.hero-showcase-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  gap: 1rem;
+}
+
+.hero-highlight-goal {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.hero-handwritten-slogan-wrap {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.hero-handwritten-slogan {
+  font-family: 'Caveat', 'Dancing Script', cursive;
+  font-size: clamp(1.25rem, 1.8vw, 1.45rem);
+  font-weight: 700;
+  color: #2563EB;
+  line-height: 1.15;
+  display: inline-block;
+  transform: rotate(-2.5deg);
+  letter-spacing: -0.01em;
+}
+
+[data-theme="dark"] .hero-handwritten-slogan {
+  color: #60A5FA;
+}
+
+/* Tablet & Mobile Breakpoints for Showcase */
+@media (max-width: 1080px) {
+  .hero-layout-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .hero-showcase-right {
+    max-width: 580px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-showcase-stage {
+    gap: 1rem;
+    flex-direction: column;
+  }
+  .hero-template-previews {
+    flex-direction: row;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .hero-template-card {
+    flex: 1 1 90px;
+    min-width: 85px;
+  }
+  .hero-floating-ats-card {
+    right: 15px;
+    top: -12px;
+    padding: 6px 10px;
+  }
+  .hero-resume-mockup {
+    grid-template-columns: 120px 1fr;
+  }
+  .hero-showcase-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .hero-handwritten-slogan-wrap {
+    text-align: left;
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-resume-mockup {
+    grid-template-columns: 105px 1fr;
+  }
+  .resume-mock-contacts {
+    display: none;
+  }
+  .mock-bullets li:nth-child(n+3) {
+    display: none;
+  }
+}
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
